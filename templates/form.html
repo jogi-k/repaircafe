@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% from 'bootstrap5/form.html' import render_form, render_field, render_form_row %}
+
+{% block content %}
+
+    <h1>Turbine Brunnen : Repaircafe 19. Okt 2024</h1>
+    <h2>Besucher</h2>
+    <form method="post">
+    {{ form.csrf_token }}
+    {{ render_form_row([repaircafe_form.last_name,repaircafe_form.first_name] ) }}
+    {{ render_form_row([repaircafe_form.city ,repaircafe_form.phone ]) }}
+        Altersgruppe: <br>
+    <div class="form-check form-check-inline">
+  <input class="form-check-input" type="radio" name="ageRadioOptions" id="age_20" value="age_20" />
+  <label class="form-check-label" for="age_20">0 - 20 Jahre </label>
+</div>
+
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="radio" name="ageRadioOptions" id="age_40" value="age_40" />
+  <label class="form-check-label" for="age_40">21 - 40 Jahre</label>
+</div>
+
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="radio" name="ageRadioOptions" id="age_60" value="age_60" />
+  <label class="form-check-label" for="age_60">41 - 60 Jahre</label>
+</div>
+
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="radio" name="ageRadioOptions" id="age_80" value="age_80" />
+  <label class="form-check-label" for="age_80">60+ Jahre</label>
+</div>
+<br>
+<hr>
+    {{ render_form_row([repaircafe_form.turbine_mailinglist, repaircafe_form.konsumenten_mailinglist] ) }}
+    {{ render_form_row([repaircafe_form.email] ) }}
+    <hr> 
+    Wie haben sie vom RepairCafe erfahren ?
+    {{ render_form_row([ repaircafe_form.info_newspaper,repaircafe_form.info_poster, repaircafe_form.info_social_media, repaircafe_form.info_website, repaircafe_form.info_mouth, ] ) }}
+    {{ render_form_row([ repaircafe_form.info_other, repaircafe_form.info_other_what ], col_map={'info_other': 'col-md-1', 'info_other_what': 'col-md-8'}) }}
+    <hr>
+    <h2>Reparatur-Gegenstand</h2>
+    
+    {{ render_form_row([repaircafe_form.repair_object_type] ) }}
+    {{ render_form_row([repaircafe_form.repair_object_brand] ) }}
+    {{ render_form_row([repaircafe_form.repair_object_error] ) }}
+    {{ render_form_row([repaircafe_form.submit1, repaircafe_form.submit2 ] ) }}
+    </form>
+    <hr>
+
+
+{% endblock %}

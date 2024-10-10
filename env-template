@@ -1,0 +1,12 @@
+
+# insert here the token of the Kanboard-Instance
+KANBOARD_TOKEN='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+
+# insert here the name Kanboard-Board-Name 
+KANBOARD_BOARD_NAME="Repaircafe_Okt_2024"
+
+# Estimted max time per repair
+REPARATUR_TIME=40
+
+# amount of repair-guys
+REPARATEURE=5

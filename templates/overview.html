@@ -1,0 +1,40 @@
+{% extends 'base_with_refresh.html' %}
+{% from 'bootstrap5/form.html' import render_form_row  %}
+
+{% block content %}
+<div class="container" width="100%" height="800px">
+  <div class="row">
+    <div class="col-sm" style="background-color : Snow">
+	    <h1 class="display-3"><center>Wartezeit</center><br></h1>
+	    <h1 class="display-1"><center>~ {{ waiting_time }} <br>  min </center><br></h1>
+    </div>
+    <div class="col-sm" style="background-color : Ivory">
+	    <h1 class="display-3"><center>Wartende</center><br></h1>
+	    <h1 class="display-1"><center>{{ queued }}</center><br></h1>
+    </div>
+    <div class="col-sm" style="background-color : HoneyDew">
+	<h1 class="display-3"><center>In Arbeit</center><br></h1>
+	<h1 class="display-1"><center>{{ active }}</center><br> </h1>
+    </div>
+  </div>
+</div>
+<br>
+<br>
+<hr>
+<br>
+<div class="container" width="100%" height="800px">
+  <div class="row">
+    <div class="col-sm">
+	    <h1 class="display-4"><center>Reparateure</center></h1><br>
+	    <h1 class="display-2"><center>{{ repair_guys }}</center> </h1>
+    </div>
+    <div class="col-sm">
+	    <h1 class="display-4"><center>Zeit pro Gegenstand</center></h1><br> 
+	    <h1 class="display-2"><center>~ {{ max_repairtime }} min</center></h1>
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}
