@@ -55,7 +55,8 @@ Technologisch wird dazu benutzt:
 
 ### Tipps 
 
-https://stackoverflow.com/questions/39738069/flask-bootstrap-with-two-forms-in-one-page
+* Two Forms/ Two Buttons : https://stackoverflow.com/questions/39738069/flask-bootstrap-with-two-forms-in-one-page
+* Configuration of Kanboard : https://github.com/kanboard/kanboard/issues/4894
 
 
 ### Die Spalten heissen:
