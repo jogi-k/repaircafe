@@ -8,6 +8,7 @@ from wtforms.fields import *
 from flask_bootstrap import Bootstrap5, SwitchField
 import kanboard
 import datetime
+import base64
 
 from pathlib import Path
 
@@ -55,6 +56,26 @@ class RepairCafeForm(FlaskForm):
     submit1 = SubmitField("Diesen Gegenstand registrieren")
     submit2 = SubmitField("Weitere Gegenstände registrieren")
 
+
+def base64_encode_file( file_name ):
+
+    with open(file_name, 'rb') as binary_file:
+        binary_file_data = binary_file.read()
+        base64_encoded_data = base64.b64encode(binary_file_data)
+        base64_output = base64_encoded_data.decode('utf-8')
+
+#        print(base64_output)
+        return base64_output
+
+
+def attach_file_to_task ( task_id, file_name ):
+    kb = kanboard.Client('http://localhost/jsonrpc.php', 'jsonrpc',kanboard_token )
+    project_props = kb.get_project_by_name(name=kanban_board_name)
+    base64_file = base64_encode_file(file_name)
+    kb.create_task_file( project_id=project_props["id"], 
+                         task_id=task_id,
+                         filename=file_name,
+                         blob=base64_file)
 
 def create_new_task_on_board(form):
         kb = kanboard.Client('http://localhost/jsonrpc.php', 'jsonrpc',kanboard_token )
@@ -121,6 +142,7 @@ def save_new(document: Document, name: str):
 def create_new_document( form, number ):
 
     document = Document(SOURCE)
+    target_name = TARGET + "_" + str(number) + ".odt"
     body = document.body
 
     body.replace("11.11.1111", "17.10.2024")
@@ -136,7 +158,8 @@ def create_new_document( form, number ):
     if form.info_website.data  : body.replace("□ Newsletter", "☑ Newsletter/Website")     
     if form.turbine_mailinglist.data  : body.replace("□ Repaircafes in der Turbine", "☑ Repaircafes in der Turbine")     
     if form.konsumenten_mailinglist.data : body.replace("□ Reparaturthemen allgemein", "☑ Reparaturthemen allgemein")     
-    save_new(document, TARGET + "_" + str(number) + ".odt" )
+    save_new(document, target_name )
+    return target_name
 
 @app.route('/')
 def index():
@@ -160,7 +183,8 @@ def test_form():
     if form.validate_on_submit():
         flash('Reparatur regisitriert !')
         rep_nr = create_new_task_on_board(form)
-        create_new_document( form, rep_nr )
+        filename = create_new_document( form, rep_nr )
+        attach_file_to_task( rep_nr, filename ) 
         return redirect(url_for('test_form'))
     return render_template(
         'form.html',
