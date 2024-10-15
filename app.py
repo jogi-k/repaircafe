@@ -64,7 +64,6 @@ def base64_encode_file( file_name ):
         base64_encoded_data = base64.b64encode(binary_file_data)
         base64_output = base64_encoded_data.decode('utf-8')
 
-#        print(base64_output)
         return base64_output
 
 
@@ -193,4 +192,4 @@ def test_form():
     )
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000 )
