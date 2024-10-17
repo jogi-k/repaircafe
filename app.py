@@ -14,6 +14,9 @@ from pathlib import Path
 
 from odfdo import Document
 
+from openpyxl import Workbook
+from openpyxl import load_workbook
+
 import os
 from dotenv import load_dotenv
 
@@ -30,6 +33,7 @@ min_waiting_time = 5
 app = Flask(__name__)
 app.secret_key = 'dev'
 
+excel_file = "RepairCafe_Okt_2024.xlsx"
 
 bootstrap = Bootstrap5(app)
 csrf = CSRFProtect(app)
@@ -56,6 +60,58 @@ class RepairCafeForm(FlaskForm):
     submit1 = SubmitField("Diesen Gegenstand registrieren")
     submit2 = SubmitField("Weitere Gegenstände registrieren")
 
+
+def WriteExcelHeader ():
+    try: 
+        workbook = load_workbook(filename = excel_file )
+    except FileNotFoundError: 
+        workbook = Workbook()
+        
+    worksheet = workbook.active
+
+    worksheet.title="RepairCafe Okt 24"
+
+    worksheet.cell(row=1,column=1,value="Name")
+    worksheet.cell(row=1,column=2,value="Vorname")
+    worksheet.cell(row=1,column=3,value="Wohnort")
+    worksheet.cell(row=1,column=4,value="Telefon")
+    worksheet.cell(row=1,column=5,value="Alter")
+    worksheet.cell(row=1,column=6,value="Email")
+    worksheet.cell(row=1,column=7,value="Turbinen-Mail")
+    worksheet.cell(row=1,column=8,value="Konsumenten-Mail")
+    worksheet.cell(row=1,column=9,value="Zeitung")
+    worksheet.cell(row=1,column=10,value="Plakat")
+    worksheet.cell(row=1,column=11,value="Social Media")
+    worksheet.cell(row=1,column=12,value="Newsletter")
+    worksheet.cell(row=1,column=13,value="Gegenstand")
+    worksheet.cell(row=1,column=14,value="Hersteller")
+    worksheet.cell(row=1,column=15,value="Typ")
+    worksheet.cell(row=1,column=16,value="Defekt")
+    worksheet.cell(row=1,column=17,value="Repariert?")
+
+    workbook.save(excel_file)
+
+def WriteExcelEntry( number, form ):
+
+    workbook = load_workbook(filename = excel_file )
+    worksheet = workbook.active
+    worksheet.cell(row=number + 1,column=1,value=form.last_name.data )
+    worksheet.cell(row=number + 1,column=2,value=form.first_name.data )
+    worksheet.cell(row=number + 1,column=3,value=form.city.data )
+    worksheet.cell(row=number + 1,column=4,value=form.phone.data )
+    worksheet.cell(row=number + 1,column=5,value="Todo" )  
+    worksheet.cell(row=number + 1,column=6,value=form.email.data )
+    worksheet.cell(row=number + 1,column=7,value=form.turbine_mailinglist.data )
+    worksheet.cell(row=number + 1,column=8,value=form.konsumenten_mailinglist.data )
+    worksheet.cell(row=number + 1,column=9,value=form.info_newspaper.data )
+    worksheet.cell(row=number + 1,column=10,value=form.info_poster.data )
+    worksheet.cell(row=number + 1,column=11,value=form.info_social_media.data )
+    worksheet.cell(row=number + 1,column=12,value=form.info_website.data )
+    worksheet.cell(row=number + 1,column=13,value=form.repair_object_type.data )
+    worksheet.cell(row=number + 1,column=14,value=form.repair_object_brand.data )
+    worksheet.cell(row=number + 1,column=15,value="Todo" )
+    worksheet.cell(row=number + 1,column=16,value=form.repair_object_error.data )
+    workbook.save(excel_file)
 
 def base64_encode_file( file_name ):
 
@@ -184,6 +240,7 @@ def test_form():
         rep_nr = create_new_task_on_board(form)
         filename = create_new_document( form, rep_nr )
         attach_file_to_task( rep_nr, filename ) 
+        WriteExcelEntry( rep_nr , form )
         return redirect(url_for('test_form'))
     return render_template(
         'form.html',
@@ -192,4 +249,7 @@ def test_form():
     )
 
 if __name__ == '__main__':
+    
+    WriteExcelHeader ()
     app.run(debug=True, host='0.0.0.0', port=5000 )
+

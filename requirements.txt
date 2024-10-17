@@ -4,3 +4,4 @@ bootstrap-flask
 flask-wtf
 odfdo
 kanboard
+openpyxl
