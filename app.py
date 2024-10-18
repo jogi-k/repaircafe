@@ -166,7 +166,10 @@ def get_active_time():
     for active_task in active_tasks:
         starttime = datetime.datetime.fromtimestamp(active_task["date_moved"]) 
         duration = now - starttime
-        summ_in_minutes = summ_in_minutes + int(duration.total_seconds()/60)
+        duration_minutes = int( duration.total_seconds() / 60 )
+        if duration_minutes  > max_repairtime:
+            duration_minutes = max_repairtime
+        summ_in_minutes = summ_in_minutes + duration_minutes 
     return int(summ_in_minutes)
 
 def get_waiting_time( ):
