@@ -64,9 +64,9 @@ class RepairCafeForm(FlaskForm):
 
 
 class ConfigForm(FlaskForm):
-    max_repairtime = RadioField("Maximale Reperaturzeit", choices = [("30", "30 min"),("40","40 min"),("50","50 min"),("60", "1 Stunde")])
+    max_repairtime = RadioField("Maximale Reparaturzeit", choices = [("30", "30 min"),("40","40 min"),("50","50 min"),("60", "1 Stunde")])
     repair_guys = RadioField("Anzahl Reparierende", choices = [("1","1"),("2","2"),("3","3"),("4","4"),("5","5"),("6","6"),("7","7"),("8","8"),("9","9"),("10","10")])
-    submit = SubmitField("Submit Config")
+    submit = SubmitField("Konfiguration sichern")
 
 def WriteExcelHeader ():
     try: 
