@@ -205,7 +205,7 @@ def create_new_document( form, number ):
     target_name = TARGET + "_" + str(number) + ".odt"
     body = document.body
 
-    body.replace("11.11.1111", "17.10.2024")
+    body.replace("11.11.1111", "19.10.2024")
     body.replace("2222", str(number) )
     body.replace("Hugo Egon", form.first_name.data + " " + form.last_name.data )
     body.replace("Lichtschwert", form.repair_object_type.data )
