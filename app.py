@@ -63,6 +63,11 @@ class RepairCafeForm(FlaskForm):
     submit2 = SubmitField("Weitere Gegenstände registrieren")
 
 
+class ConfigForm(FlaskForm):
+    max_repairtime = RadioField("Maximale Reperaturzeit", choices = [("30", "30 min"),("40","40 min"),("50","50 min"),("60", "1 Stunde")])
+    repair_guys = RadioField("Anzahl Reparierende", choices = [("1","1"),("2","2"),("3","3"),("4","4"),("5","5"),("6","6"),("7","7"),("8","8"),("9","9"),("10","10")])
+    submit = SubmitField("Submit Config")
+
 def WriteExcelHeader ():
     try: 
         workbook = load_workbook(filename = excel_file )
@@ -241,7 +246,7 @@ def overview():
 def test_form():
     form = RepairCafeForm()
     if form.validate_on_submit():
-        flash('Reparatur regisitriert !')
+        flash('Reparatur registriert !')
         rep_nr = create_new_task_on_board(form)
         filename = create_new_document( form, rep_nr )
         attach_file_to_task( rep_nr, filename ) 
@@ -253,6 +258,23 @@ def test_form():
         repaircafe_form=RepairCafeForm()
     )
 
+@app.route('/config', methods=['GET', 'POST'])
+def config_form():
+    global max_repairtime
+    global repair_guys
+    print("Before: Repairtime = " + str(max_repairtime) + "Guys = " + str(repair_guys) )
+    form = ConfigForm()
+    if form.validate_on_submit():
+        flash('Konfiguration registriert !')
+        max_repairtime = int(form.max_repairtime.data)
+        repair_guys = int(form.repair_guys.data)
+        print("After: Repairtime = " + str(max_repairtime) + "Guys = " + str(repair_guys) )
+        return redirect(url_for('overview'))
+    return render_template(
+        'config.html',
+        form=form,
+        config_form=ConfigForm()
+    )
 if __name__ == '__main__':
     
     WriteExcelHeader ()

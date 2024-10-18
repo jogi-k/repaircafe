@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% from 'bootstrap5/form.html' import render_form, render_field, render_form_row %}
+
+{% block content %}
+
+    <h1>Turbine Brunnen : Repaircafe 19. Okt 2024</h1>
+    <h2>Configuration</h2>
+    <form method="post">
+    {{ form.csrf_token }}
+    {{ render_form_row([config_form.max_repairtime] ) }}
+    <hr>
+    {{ render_form_row([config_form.repair_guys   ]) }}
+    <hr>
+    {{ render_form_row([config_form.submit ] ) }}
+    </form>
+    <hr>
+
+
+{% endblock %}
