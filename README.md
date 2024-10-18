@@ -28,7 +28,7 @@ Technologisch wird dazu benutzt:
 
 (Ziel ist es, das alles in ein docker-compose zu packen, aber das ist noch Zukunfts-Musik)
 
-* Initiales Herunterladen und Starten des Kanboard-Docker-Images : ```docker run -d --name kanboard -p 80:80 -t kanboard/kanboard:v1.4.0```
+* Initiales Herunterladen und Starten des Kanboard-Docker-Images : ```docker run -d --name kanboard -p 8880:80 -t kanboard/kanboard:v1.2.39```
 * (Späteres Starten des Kanboard-Images : ```docker start kanboard```
 * Anlegen eines Projektes und Export des API-Keys
 * Übertragen der Daten in Umgebungs-Variablen/.env-File, siehe env-template , bitte befüllen und nach .env umbenennen

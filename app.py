@@ -126,7 +126,7 @@ def base64_encode_file( file_name ):
 
 
 def attach_file_to_task ( task_id, file_name ):
-    kb = kanboard.Client('http://localhost/jsonrpc.php', 'jsonrpc',kanboard_token )
+    kb = kanboard.Client('http://localhost:8880/jsonrpc.php', 'jsonrpc',kanboard_token )
     project_props = kb.get_project_by_name(name=kanban_board_name)
     base64_file = base64_encode_file(file_name)
     kb.create_task_file( project_id=project_props["id"], 
@@ -135,29 +135,29 @@ def attach_file_to_task ( task_id, file_name ):
                          blob=base64_file)
 
 def create_new_task_on_board(form):
-        kb = kanboard.Client('http://localhost/jsonrpc.php', 'jsonrpc',kanboard_token )
-        project_props = kb.get_project_by_name(name=kanban_board_name)
-        task_id = kb.create_task(project_id=project_props["id"], 
+    kb = kanboard.Client('http://localhost:8880/jsonrpc.php', 'jsonrpc',kanboard_token )
+    project_props = kb.get_project_by_name(name=kanban_board_name)
+    task_id = kb.create_task(project_id=project_props["id"], 
                                  title=form.repair_object_brand.data + " : " + form.repair_object_type.data, 
                                  description = "# Besitzer  \n\n" + form.last_name.data + "\n# Fehler: \n\n" + form.repair_object_error.data  )
-        return task_id
+    return task_id
 
 def get_amount_waiting_tasks( ):
-        kb = kanboard.Client('http://localhost/jsonrpc.php', 'jsonrpc',kanboard_token )
-        project_props = kb.get_project_by_name(name=kanban_board_name)
-        column_props = kb.get_columns(project_id=project_props["id"])
-        waiting_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[1]["title"] + "\"" )
-        return len(waiting_tasks)
+    kb = kanboard.Client('http://localhost:8880/jsonrpc.php', 'jsonrpc',kanboard_token )
+    project_props = kb.get_project_by_name(name=kanban_board_name)
+    column_props = kb.get_columns(project_id=project_props["id"])
+    waiting_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[1]["title"] + "\"" )
+    return len(waiting_tasks)
 
 def get_amount_active_tasks( ):
-        kb = kanboard.Client('http://localhost/jsonrpc.php', 'jsonrpc',kanboard_token )
-        project_props = kb.get_project_by_name(name=kanban_board_name)
-        column_props = kb.get_columns(project_id=project_props["id"])
-        active_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[2]["title"] + "\"" )
-        return len(active_tasks)
+    kb = kanboard.Client('http://localhost:8880/jsonrpc.php', 'jsonrpc',kanboard_token )
+    project_props = kb.get_project_by_name(name=kanban_board_name)
+    column_props = kb.get_columns(project_id=project_props["id"])
+    active_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[2]["title"] + "\"" )
+    return len(active_tasks)
 
 def get_active_time():
-    kb = kanboard.Client('http://localhost/jsonrpc.php', 'jsonrpc', kanboard_token )
+    kb = kanboard.Client('http://localhost:8880/jsonrpc.php', 'jsonrpc', kanboard_token )
     project_props = kb.get_project_by_name(name=kanban_board_name)
     column_props = kb.get_columns(project_id=project_props["id"])
     active_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[2]["title"] + "\"" )
@@ -221,7 +221,7 @@ def create_new_document( form, number ):
     save_new(document, target_name )
     return target_name
 
-@app.route('/')
+@app.route('/oldindex')
 def index():
     return render_template('index.html')
 
@@ -237,7 +237,7 @@ def overview():
     waiting_time = get_waiting_time ()  
     return render_template('overview.html', active=str(active), queued=str(waiting),waiting_time = str(waiting_time), repair_guys = str(repair_guys),max_repairtime = str(max_repairtime)   )
 
-@app.route('/form', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def test_form():
     form = RepairCafeForm()
     if form.validate_on_submit():
@@ -256,5 +256,5 @@ def test_form():
 if __name__ == '__main__':
     
     WriteExcelHeader ()
-    app.run(debug=True, host='0.0.0.0', port=5000 )
+    app.run(debug=True, host='0.0.0.0', port=80 )
 
