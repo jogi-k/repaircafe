@@ -1,8 +1,8 @@
 # repaircafe
 
-Hilfstool für unser Repaircafe (Registrierung, Doc-Creation, Taskboard, Übersicht, Wartezeit)
+Hilfstool für unser [Repaircafe](https://www.turbine-brunnen.ch/repaircafe/) (Registrierung, Doc-Creation, Taskboard, Übersicht, Wartezeit)
 
-Dies ist eine Sammlung um eine Webbasierte Hilfe für unser Repaircafe anzubieten.  
+Dies ist eine Sammlung um eine webbasierte Hilfe für unser Repaircafe anzubieten.  
 Das Tool läuft auf einem Raspberry-Pi als Server und bietet folgende Dinge an:
 
 * Webbasierte Registrierung von Kunden und Reparatur-Gegenständen
@@ -34,7 +34,10 @@ Technologisch wird dazu benutzt:
 * Übertragen der Daten in Umgebungs-Variablen/.env-File, siehe env-template , bitte befüllen und nach .env umbenennen
 * Requirements installieren:  ```pip install -r requirements.txt```
 * Flask-Server starten : ```python app.py```
-* Browser auf localhost:80 (Kanban-Board) und auf localhost:5000 (Formular, Übersicht) starten.
+* Browser auf localhost:8880 (Kanban-Board) und auf localhost für Formular starten
+    * localhost/overview ==> für die Übersicht
+    * localhost/config ==> für die Konfiguration der angestrebten Reparatur-Dauer und der Anzahl Reparierenden  
+* 
 
 
 ## Ideen / Link-Sammlung / Tipps
