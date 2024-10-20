@@ -24,6 +24,7 @@ load_dotenv()
 
 
 kanboard_token = os.getenv('KANBOARD_TOKEN')
+kanban_board_api_point = os.getenv('KANBOARD_ENDPOINT')
 kanban_board_name = os.getenv('KANBOARD_BOARD_NAME')
 max_repairtime = int(os.getenv('REPARATUR_TIME'))
 repair_guys = int(os.getenv('REPARATEURE'))
@@ -131,7 +132,7 @@ def base64_encode_file( file_name ):
 
 
 def attach_file_to_task ( task_id, file_name ):
-    kb = kanboard.Client('http://localhost:8880/jsonrpc.php', 'jsonrpc',kanboard_token )
+    kb = kanboard.Client('kanban_board_api_point', 'jsonrpc',kanboard_token )
     project_props = kb.get_project_by_name(name=kanban_board_name)
     base64_file = base64_encode_file(file_name)
     kb.create_task_file( project_id=project_props["id"], 
@@ -140,7 +141,7 @@ def attach_file_to_task ( task_id, file_name ):
                          blob=base64_file)
 
 def create_new_task_on_board(form):
-    kb = kanboard.Client('http://localhost:8880/jsonrpc.php', 'jsonrpc',kanboard_token )
+    kb = kanboard.Client('kanban_board_api_point', 'jsonrpc',kanboard_token )
     project_props = kb.get_project_by_name(name=kanban_board_name)
     task_id = kb.create_task(project_id=project_props["id"], 
                                  title=form.repair_object_brand.data + " : " + form.repair_object_type.data, 
@@ -148,21 +149,21 @@ def create_new_task_on_board(form):
     return task_id
 
 def get_amount_waiting_tasks( ):
-    kb = kanboard.Client('http://localhost:8880/jsonrpc.php', 'jsonrpc',kanboard_token )
+    kb = kanboard.Client('kanban_board_api_point', 'jsonrpc',kanboard_token )
     project_props = kb.get_project_by_name(name=kanban_board_name)
     column_props = kb.get_columns(project_id=project_props["id"])
     waiting_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[1]["title"] + "\"" )
     return len(waiting_tasks)
 
 def get_amount_active_tasks( ):
-    kb = kanboard.Client('http://localhost:8880/jsonrpc.php', 'jsonrpc',kanboard_token )
+    kb = kanboard.Client('kanban_board_api_point', 'jsonrpc',kanboard_token )
     project_props = kb.get_project_by_name(name=kanban_board_name)
     column_props = kb.get_columns(project_id=project_props["id"])
     active_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[2]["title"] + "\"" )
     return len(active_tasks)
 
 def get_active_time():
-    kb = kanboard.Client('http://localhost:8880/jsonrpc.php', 'jsonrpc', kanboard_token )
+    kb = kanboard.Client('kanban_board_api_point', 'jsonrpc', kanboard_token )
     project_props = kb.get_project_by_name(name=kanban_board_name)
     column_props = kb.get_columns(project_id=project_props["id"])
     active_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[2]["title"] + "\"" )
