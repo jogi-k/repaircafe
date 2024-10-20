@@ -2,6 +2,10 @@
 # insert here the token of the Kanboard-Instance
 KANBOARD_TOKEN='xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
+# insert here the public available API-Endpoint. 
+# Attention, when running not from docker-commandline like in the readme, that might be different !
+KANBOARD_ENDPOINT='http://localhost:8880/jsonrpc.php'
+
 # insert here the name Kanboard-Board-Name 
 KANBOARD_BOARD_NAME="Repaircafe_Okt_2024"
 
