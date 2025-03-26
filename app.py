@@ -9,6 +9,7 @@ from flask_bootstrap import Bootstrap5, SwitchField
 import kanboard
 import datetime
 import base64
+import subprocess
 
 from pathlib import Path
 
@@ -226,6 +227,9 @@ def create_new_document( form, number ):
     if form.konsumenten_mailinglist.data : body.replace("□ Reparaturthemen allgemein", "☑ Reparaturthemen allgemein")     
     save_new(document, target_name )
     return target_name
+
+def print_document( filename ):
+    subprocess.Popen(["libreoffice", "-p", filename ])
 
 @app.route('/oldindex')
 def index():
