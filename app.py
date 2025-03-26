@@ -35,7 +35,12 @@ min_waiting_time = 5
 app = Flask(__name__)
 app.secret_key = 'dev'
 
-excel_file = "RepairCafe_Okt_2024.xlsx"
+excel_file = "RepairCafe_Mar_2025.xlsx"
+WORKSHEET_TITLE = "RepairCafe Mar 25"
+SOURCE = "Reparaturblatt_A4_template.odt"
+TARGET = "Reparaturblatt_Mar_2025_Nr"
+EXACT_DATE = "29.03.2025"
+
 
 bootstrap = Bootstrap5(app)
 csrf = CSRFProtect(app)
@@ -78,7 +83,7 @@ def WriteExcelHeader ():
         
     worksheet = workbook.active
 
-    worksheet.title="RepairCafe Okt 24"
+    worksheet.title=WORKSHEET_TITLE
 
     worksheet.cell(row=1,column=1,value="Name")
     worksheet.cell(row=1,column=2,value="Vorname")
@@ -133,7 +138,7 @@ def base64_encode_file( file_name ):
 
 
 def attach_file_to_task ( task_id, file_name ):
-    kb = kanboard.Client('kanban_board_api_point', 'jsonrpc',kanboard_token )
+    kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
     project_props = kb.get_project_by_name(name=kanban_board_name)
     base64_file = base64_encode_file(file_name)
     kb.create_task_file( project_id=project_props["id"], 
@@ -142,7 +147,7 @@ def attach_file_to_task ( task_id, file_name ):
                          blob=base64_file)
 
 def create_new_task_on_board(form):
-    kb = kanboard.Client('kanban_board_api_point', 'jsonrpc',kanboard_token )
+    kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
     project_props = kb.get_project_by_name(name=kanban_board_name)
     task_id = kb.create_task(project_id=project_props["id"], 
                                  title=form.repair_object_brand.data + " : " + form.repair_object_type.data, 
@@ -150,21 +155,21 @@ def create_new_task_on_board(form):
     return task_id
 
 def get_amount_waiting_tasks( ):
-    kb = kanboard.Client('kanban_board_api_point', 'jsonrpc',kanboard_token )
+    kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
     project_props = kb.get_project_by_name(name=kanban_board_name)
     column_props = kb.get_columns(project_id=project_props["id"])
     waiting_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[1]["title"] + "\"" )
     return len(waiting_tasks)
 
 def get_amount_active_tasks( ):
-    kb = kanboard.Client('kanban_board_api_point', 'jsonrpc',kanboard_token )
+    kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
     project_props = kb.get_project_by_name(name=kanban_board_name)
     column_props = kb.get_columns(project_id=project_props["id"])
     active_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[2]["title"] + "\"" )
     return len(active_tasks)
 
 def get_active_time():
-    kb = kanboard.Client('kanban_board_api_point', 'jsonrpc', kanboard_token )
+    kb = kanboard.Client(kanban_board_api_point, 'jsonrpc', kanboard_token )
     project_props = kb.get_project_by_name(name=kanban_board_name)
     column_props = kb.get_columns(project_id=project_props["id"])
     active_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[2]["title"] + "\"" )
@@ -198,8 +203,6 @@ def get_waiting_time( ):
 
 
 
-SOURCE = "Reparaturblatt_A4_template.odt"
-TARGET = "Reparaturblatt_Okt_2024_Nr"
 
 def save_new(document: Document, name: str):
     new_path = name
@@ -212,7 +215,7 @@ def create_new_document( form, number ):
     target_name = TARGET + "_" + str(number) + ".odt"
     body = document.body
 
-    body.replace("11.11.1111", "19.10.2024")
+    body.replace("11.11.1111", EXACT_DATE)
     body.replace("2222", str(number) )
     body.replace("Hugo Egon", form.first_name.data + " " + form.last_name.data )
     body.replace("Lichtschwert", form.repair_object_type.data )
