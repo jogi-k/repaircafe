@@ -14,3 +14,6 @@ REPARATUR_TIME=40
 
 # amount of repair-guys
 REPARATEURE=5
+
+# Shall the server (Raspi) print automatically on registration of repair-thingy
+PRINT_AUTO=1
