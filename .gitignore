@@ -1,0 +1,8 @@
+.gitignore
+.env
+*odt
+*xlsx
+kanboard/kanboard_data/*
+kanboard/kanboard_plugins/*
+kanboard/kanboard_ssl/*
+__pycache__/*
