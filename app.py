@@ -29,6 +29,7 @@ kanban_board_api_point = os.getenv('KANBOARD_ENDPOINT')
 kanban_board_name = os.getenv('KANBOARD_BOARD_NAME')
 max_repairtime = int(os.getenv('REPARATUR_TIME'))
 repair_guys = int(os.getenv('REPARATEURE'))
+print_active = int(os.getenv('PRINT_AUTO'))
 
 min_waiting_time = 5
 
@@ -73,6 +74,7 @@ class RepairCafeForm(FlaskForm):
 class ConfigForm(FlaskForm):
     max_repairtime = RadioField("Maximale Reparaturzeit", choices = [("30", "30 min"),("40","40 min"),("50","50 min"),("60", "1 Stunde")])
     repair_guys = RadioField("Anzahl Reparierende", choices = [("1","1"),("2","2"),("3","3"),("4","4"),("5","5"),("6","6"),("7","7"),("8","8"),("9","9"),("10","10")])
+    print_active = BooleanField('Druck automatisch')
     submit = SubmitField("Konfiguration sichern")
 
 def WriteExcelHeader ():
@@ -232,7 +234,8 @@ def create_new_document( form, number ):
     return target_name
 
 def print_document( filename ):
-    subprocess.Popen(["libreoffice", "-p", filename ])
+    if print_active == 1 : 
+        subprocess.Popen(["libreoffice", "-p", filename ])
 
 @app.route('/oldindex')
 def index():
@@ -254,11 +257,12 @@ def overview():
 def test_form():
     form = RepairCafeForm()
     if form.validate_on_submit():
-        flash('Reparatur registriert !')
         rep_nr = create_new_task_on_board(form)
+        flash('Reparatur registriert ! Mit dieser Nummer (bitte merken) zur Registration :  '  + str(rep_nr) )
         filename = create_new_document( form, rep_nr )
         attach_file_to_task( rep_nr, filename ) 
         WriteExcelEntry( rep_nr , form )
+        print_document( filename )
         return redirect(url_for('test_form'))
     return render_template(
         'form.html',
@@ -270,12 +274,14 @@ def test_form():
 def config_form():
     global max_repairtime
     global repair_guys
+    global print_active
     print("Before: Repairtime = " + str(max_repairtime) + "Guys = " + str(repair_guys) )
     form = ConfigForm()
     if form.validate_on_submit():
         flash('Konfiguration registriert !')
         max_repairtime = int(form.max_repairtime.data)
         repair_guys = int(form.repair_guys.data)
+        print_active = int(form.print_active.data)
         print("After: Repairtime = " + str(max_repairtime) + "Guys = " + str(repair_guys) )
         return redirect(url_for('overview'))
     return render_template(

@@ -3,13 +3,15 @@
 
 {% block content %}
 
-    <h1>Turbine Brunnen : Repaircafe 19. Okt 2024</h1>
+    <h1>Turbine Brunnen : Repaircafe 29. Mar 2025</h1>
     <h2>Configuration</h2>
     <form method="post">
     {{ form.csrf_token }}
     {{ render_form_row([config_form.max_repairtime] ) }}
     <hr>
     {{ render_form_row([config_form.repair_guys   ]) }}
+    <hr>
+    {{ render_form_row([config_form.print_active  ]) }}
     <hr>
     {{ render_form_row([config_form.submit ] ) }}
     </form>
