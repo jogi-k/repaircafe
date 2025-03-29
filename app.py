@@ -235,7 +235,7 @@ def create_new_document( form, number ):
 
 def print_document( filename ):
     if print_active == 1 : 
-        subprocess.Popen(["libreoffice", "-p", filename ])
+        subprocess.Popen(["libreoffice", "--norestore", "-p", filename ])
 
 @app.route('/oldindex')
 def index():
