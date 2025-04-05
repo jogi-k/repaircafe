@@ -1,0 +1,29 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides: myrepairserver
+# Required-Start: $syslog
+# Required-Stop: $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: kanbanboard and python-server
+# Description:
+### END INIT INFO
+ 
+case "$1" in
+    start)
+        echo "My repairserver wird gestartet"
+        # Starte Programm
+        sudo -u cafe /home/cafe/repaircafe/autostart/cafestart
+        ;;
+    stop)
+        echo "My repairserver wird gestoppt"
+        # Beende Programm
+        sudo -u cafe /home/cafe/repaircafe/autostart/cafestop
+        ;;
+    *)
+        echo "Benutzt: /etc/init.d/myrepairserver {start|stop}"
+        exit 1
+        ;;
+esac
+ 
+exit 0

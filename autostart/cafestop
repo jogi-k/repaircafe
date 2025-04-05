@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd /home/cafe/repaircafe
+docker-compose -f kanboard/docker-compose.yml down  
+# TODO: Find solution... will be done automatically when part of docker-compose...
+# sudo killall python 
+

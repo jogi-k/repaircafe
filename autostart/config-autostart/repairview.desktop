@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=RepairDashBoard
+Exec=/home/cafe/repaircafe/autostart/startbrowser
+
