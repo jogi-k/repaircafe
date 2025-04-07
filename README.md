@@ -72,18 +72,33 @@ Technologisch wird dazu benutzt:
 
 # Installation
 
-(Ziel ist es, das alles in ein docker-compose zu packen, aber das ist noch Zukunfts-Musik)
+(Ziel ist es, das alles in ein docker-compose zu packen, momentan ist das nur für das Kanban-Board der Fall, das Python-Programm muss noch von Hand installiert werden) 
 
-* Initiales Herunterladen und Starten des Kanboard-Docker-Images : ```docker run -d --name kanboard -p 8880:80 -t kanboard/kanboard:v1.2.39```
-* (SpÃ¤teres Starten des Kanboard-Images : ```docker start kanboard```
+* Starten des Kanbanboards : docker-compose / docker compose im Unterverzeichnis kanboard ```docker compose -f kanboard/docker-compose.yml up -d```
 * Anlegen eines Projektes und Export des API-Keys
 * Ãœbertragen der Daten in Umgebungs-Variablen/.env-File, siehe env-template , bitte befÃ¼llen und nach .env umbenennen
-* Requirements installieren:  ```pip install -r requirements.txt```
+* Virtual environment anlegen : ``` python -m venv venv``` (einmalig)
+* Virtual environment aktiviriern : ```source venv/bin/activate```
+* Requirements installieren:  ```pip install -r requirements.txt``` (einmalig)
 * Flask-Server starten : ```python app.py```
-* Browser auf localhost:8880 (Kanban-Board) und auf localhost fÃ¼r Formular starten
-    * localhost/overview ==> fÃ¼r die Ãœbersicht
-    * localhost/config ==> fÃ¼r die Konfiguration der angestrebten Reparatur-Dauer und der Anzahl Reparierenden  
-* 
+* Browser starten, folgende Routes werde darzeit unterstütztz:
+    * ```localhost:8880``` :  Kanban-Board
+    * ```localhost``` : Eingabe-Formular für die Selbstregistrierung
+    * ```localhost/overview``` : das Übersichts-Dashboard für den Empfang
+    * ```localhost/config``` : Konfiguration der angestrebten Reparatur-Dauer und der Anzahl Reparierenden  
+
+
+# Autostart
+
+Die Installation geht davon aus, dass der Raspberry Pi Server für mehrere Dinge gleichzeitig zuständig ist 
+
+* Bereitstellng des Kanban-Boards
+* Bereitstellung der repaircafe Web-App mit Formular, Übersicht, Fernsteuerung des Kanban-Boards etc
+* Anzeige des Übersichts-Dashboards an einem angeschlossenen Monitor
+
+Dazu gibt es ein paar autostart-Helper im Unterverzeichnis ```autostart``` ,  dort befindet sich eine [Readme-Datei](autostart/README-autostart.md)
+
+ 
 
 
 # Ideen / Link-Sammlung / Tipps
