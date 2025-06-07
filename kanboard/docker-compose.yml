@@ -1,7 +1,7 @@
 version: '2'
 services:
   kanboard:
-    image: kanboard/kanboard:v1.2.44
+    image: ghcr.io/jogi-k/kanboard:v1.2.46-minute-gran-01
     ports:
       - "8880:80"
       - "443:443"
