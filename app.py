@@ -40,11 +40,11 @@ min_waiting_time = 5
 app = Flask(__name__)
 app.secret_key = 'dev'
 
-excel_file = "RepairCafe_Mar_2025.xlsx"
-WORKSHEET_TITLE = "RepairCafe Mar 25"
+excel_file = "RepairCafe_June_2025.xlsx"
+WORKSHEET_TITLE = "RepairCafe June 25"
 SOURCE = "Reparaturblatt_A4_template.odt"
-TARGET = "Reparaturblatt_Mar_2025_Nr"
-EXACT_DATE = "29.03.2025"
+TARGET = "Reparaturblatt_June_2025_Nr"
+EXACT_DATE = "14.06.2025"
 
 
 bootstrap = Bootstrap5(app)
