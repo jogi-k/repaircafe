@@ -25,11 +25,15 @@ load_dotenv()
 
 
 kanboard_token = os.getenv('KANBOARD_TOKEN')
-kanban_board_api_point = os.getenv('KANBOARD_ENDPOINT')
 kanban_board_name = os.getenv('KANBOARD_BOARD_NAME')
-max_repairtime = int(os.getenv('REPARATUR_TIME'))
-repair_guys = int(os.getenv('REPARATEURE'))
-print_active = int(os.getenv('PRINT_AUTO'))
+kanban_board_api_point = os.getenv('KANBOARD_ENDPOINT',"http://localhost:8880/jsonrpc.php")
+max_repairtime = int(os.getenv('REPARATUR_TIME',40))
+repair_guys = int(os.getenv('REPARATEURE',10))
+print_active = int(os.getenv('PRINT_AUTO',0))
+color_default = os.getenv('COLOR_DEFAULT',"blue")
+color_textil = os.getenv('COLOR_TEXTIL',"green")
+
+
 
 min_waiting_time = 5
 
@@ -151,9 +155,11 @@ def attach_file_to_task ( task_id, file_name ):
 def create_new_task_on_board(form):
     kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
     project_props = kb.get_project_by_name(name=kanban_board_name)
+    color = color_textil  if form.repair_object_category.data == "textil" else color_default
     task_id = kb.create_task(project_id=project_props["id"], 
                                  title=form.repair_object_brand.data + " : " + form.repair_object_type.data, 
-                                 description = "# Besitzer  \n\n" + form.last_name.data + "\n# Fehler: \n\n" + form.repair_object_error.data  )
+                                 description = "# Besitzer  \n\n" + form.last_name.data + "\n# Fehler: \n\n" + form.repair_object_error.data,
+                             color_id=color)
     return task_id
 
 def get_amount_waiting_tasks( ):

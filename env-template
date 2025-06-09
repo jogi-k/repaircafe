@@ -17,3 +17,9 @@ REPARATEURE=5
 
 # Shall the server (Raspi) print automatically on registration of repair-thingy
 PRINT_AUTO=1
+
+# Colors of the cards for default repair-objects
+COLOR_DEFAULT="blue"
+
+# Colors of the cards for textile repairs 
+COLOR_TEXTIL="green"
