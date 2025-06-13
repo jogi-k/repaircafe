@@ -9,6 +9,9 @@ KANBOARD_ENDPOINT='http://localhost:8880/jsonrpc.php'
 # insert here the name Kanboard-Board-Name 
 KANBOARD_BOARD_NAME="Repaircafe_Okt_2024"
 
+# Public Read-Link
+READONLY_LINK="http://localhost:8880/public/board/df4285fcabf911395dc27cb178bab8a417b4c7fbbb640f5d4f0a45e5569a"
+
 # Estimted max time per repair
 REPARATUR_TIME=40
 

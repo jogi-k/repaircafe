@@ -92,6 +92,9 @@ Technologisch wird dazu benutzt:
     * ```localhost``` : Eingabe-Formular für die Selbstregistrierung
     * ```localhost/overview``` : das Übersichts-Dashboard für den Empfang
     * ```localhost/config``` : Konfiguration der angestrebten Reparatur-Dauer und der Anzahl Reparierenden  
+    * ```localhost/board ``` : Nochmal das Kanbanboard, einfacher zu merken ...  
+    * ```localhost/publicboard ``` : Nochmal das Kanbanboard, allerdings read only ...  
+    * ```localhost/toggle      ``` : Ein alternierendes Board zwischen Dashboard und read-only Kanban, für die Reparierenden ...  
 
 
 # Autostart

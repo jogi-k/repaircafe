@@ -3,13 +3,14 @@ from enum import Enum
 from flask import Flask, render_template, request, flash, redirect, url_for
 from markupsafe import Markup
 from flask_wtf import FlaskForm, CSRFProtect
-from wtforms.validators import DataRequired, Length, Regexp
+from wtforms.validators import DataRequired, Length, Regexp, InputRequired
 from wtforms.fields import *
 from flask_bootstrap import Bootstrap5, SwitchField
 import kanboard
 import datetime
 import base64
 import subprocess
+import time 
 
 from pathlib import Path
 
@@ -32,8 +33,9 @@ repair_guys = int(os.getenv('REPARATEURE',10))
 print_active = int(os.getenv('PRINT_AUTO',0))
 color_default = os.getenv('COLOR_DEFAULT',"blue")
 color_textil = os.getenv('COLOR_TEXTIL',"green")
+public_link = os.getenv('READONLY_LINK')
 
-
+print("Public Link = " + public_link )
 
 min_waiting_time = 5
 
@@ -57,7 +59,7 @@ class RepairCafeForm(FlaskForm):
     city = StringField("Wohnort *", validators=[DataRequired(), Length(2, 100)])
     phone = TelField("Telefon")
     email = EmailField("Email")
-    age_radio_option = RadioField("Altersgruppe", choices =[("age_0_20","0 - 20 Jahre"),("age_20_40","21 - 40 Jahre"),("age_40_60","41 - 60 Jahre"),("age_60_more","60+ Jahre")])
+    age_radio_option = RadioField("Altersgruppe *", validators=[InputRequired()], choices =[("age_0_20","0 - 20 Jahre"),("age_20_40","21 - 40 Jahre"),("age_40_60","41 - 60 Jahre"),("age_60_more","60+ Jahre")])
     turbine_mailinglist = BooleanField('Ich möchte über die nächsten Repair-Cafes in der Turbine informiert werden')
     konsumenten_mailinglist = BooleanField('Der Konsumentenschutz darf mich über Repair-Themen informieren')
     info_newspaper = BooleanField('Zeitung')
@@ -69,7 +71,7 @@ class RepairCafeForm(FlaskForm):
     info_other_what = StringField("")
     repair_object_type = StringField("Gegenstand *", validators=[DataRequired(), Length(2, 200)])
     repair_object_brand = StringField("Hersteller")
-    repair_object_category = RadioField("Kategorie", choices=[('handy', 'Handy/Tablet/Unterhaltungselektronik'), ('computer', 'Computer/Laptop'), ('haushalt', 'Haushaltsgeräte'), ('holz_etc', 'Holz/Metall/Mechanik'), ("textil", "Textilien/Leder"), ("sonstiges", "Übriges/Allerlei")])
+    repair_object_category = RadioField("Kategorie *", validators=[InputRequired()], choices=[('handy', 'Handy/Tablet/Unterhaltungselektronik'), ('computer', 'Computer/Laptop'), ('haushalt', 'Haushaltsgeräte'), ('holz_etc', 'Holz/Metall/Mechanik'), ("textil", "Textilien/Leder"), ("sonstiges", "Übriges/Allerlei")])
     repair_object_error = TextAreaField("Fehler-Beschreibung, bitte so genau wie möglich! *", validators=[DataRequired(), Length(2, 1000)])
     submit1 = SubmitField("Diesen Gegenstand registrieren")
     submit2 = SubmitField("Weitere Gegenstände registrieren")
@@ -252,6 +254,11 @@ def index():
 def board():
     return render_template('board.html')
 
+@app.route('/publicboard', methods=['GET', 'POST'])
+def publicboard():
+    global public_link
+    return render_template('publicboard.html', url=public_link)
+
 @app.route('/overview', methods=['GET', 'POST'])
 def overview():
     active = get_amount_active_tasks()
@@ -259,12 +266,42 @@ def overview():
     waiting_time = get_waiting_time ()  
     return render_template('overview.html', active=str(active), queued=str(waiting),waiting_time = str(waiting_time), repair_guys = str(repair_guys),max_repairtime = str(max_repairtime)   )
 
+@app.route('/toggle')
+def toggle():
+    """
+    Alternates between returning the response from /publicboard and /overview 
+    every 10 seconds
+    """
+    # Get the current time in seconds since the epoch
+    current_time_seconds = time.time()
+
+
+    # Determine which 10-second block we are in.
+    # Integer division by 10 gives us the block number.
+    
+    ten_seconds_block_index = current_time_seconds // 10
+
+    # Check if the block index is even or odd.
+    # 0, 2, 4... serve route 1
+    # 1, 3, 5... serve route 2
+    if ten_seconds_block_index % 2 == 0:
+        # Even block: call the function handling route1 directly
+        # print(f"Time {time.ctime(current_time_seconds)}: Serving Route 1 (Block {ten_seconds_block_index})")
+        # We call the view function directly to get its return value
+        return overview()
+    else:
+        # Odd block: call the function handling route2 directly
+        # print(f"Time {time.ctime(current_time_seconds)}: Serving Route 2 (Block {ten_seconds_block_index})")
+        # We call the view function directly to get its return value
+        return publicboard()
+
+
 @app.route('/', methods=['GET', 'POST'])
 def test_form():
     form = RepairCafeForm()
     if form.validate_on_submit():
         rep_nr = create_new_task_on_board(form)
-        flash('Reparatur registriert ! Mit dieser Nummer (bitte merken) zur Registration :  '  + str(rep_nr) )
+        flash('Reparatur für : ' + form.repair_object_type.data + " wurde mit der Nummer : " + str(rep_nr) + "  registriert! Bitte mit dieser Nummer zur Registration.   Bitte Ausgabe schliessen ==> " )
         filename = create_new_document( form, rep_nr )
         attach_file_to_task( rep_nr, filename ) 
         WriteExcelEntry( rep_nr , form )
