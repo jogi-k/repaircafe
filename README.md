@@ -138,7 +138,25 @@ Dazu gibt es ein paar autostart-Helper im Unterverzeichnis ```autostart``` ,  do
 * base64-encode a file : https://gist.github.com/juliensalinas/15789d241f28b1ce45f0c22e11ba894a
 * Allow binding on port 80 for normal user : e.g. https://superuser.com/a/1482188
 
+# Installation Registrier-Laptops
 
+* Empfehlung : FAI : https://fai-project.org/FAIme/ als Basis-System, generiert einen One-Install-USB-Stick
+* Aktuell genutzt : Debian Trixie 
+* Anschliessend auf dem installierten Laptop:
+    * su -
+    * Wifi firmware installieren , in my case : 
+        * apt install firmware-iwlwifi
+    * usermod -a -G sudo turbine
+    * Keyboard auf Schweiz
+    * Screensaver abschalten
+    * Zeitzone Zuerich / Uhr stellen
+    * autologin via:
+        * /etc/lightdm/lightdm.conf
+    * Browser mit link auf Registrierpage automatisch starten
+        * $HOME/.config/autostart/xyz.Desktop ( verweist auf )
+        * $HOME/bin/browserstart mit : firefox --kiosk 192.168.8.88 
+
+    * 
 
 ### Die Spalten heissen:
  
