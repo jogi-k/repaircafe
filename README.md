@@ -116,7 +116,12 @@ Dazu gibt es ein paar autostart-Helper im Unterverzeichnis ```autostart``` ,  do
 
 * Basic: https://github.com/ritakurban/Kanban-Board
 * Basic: https://github.com/kevinyang372/kanban_board
-* Extendend, Trello-artig : https://github.com/FLiotta/Tiquet
+* Extended, Trello-artig : https://github.com/FLiotta/Tiquet : Outdated, 6 years old
+* Extended: kan.bn , Trello- Artig : https://github.com/kanbn/kan , sieht gut aus, aber leider keine Nummern out of the Box.
+* Extended: kaneo , Trello-Artig : https://github.com/usekaneo/kaneo , sieht noch besser aus, aber weder mit lite noch mit standard-config schnell zum Laufen gebracht..
+* Extended: wekan, https://github.com/wekan/wekan/tree/main, versucht via snap, hat nicht funktioniert, konnte mich nicht einloggen.
+
+
 
 ## Erweiterung der Anzeige auf Divoom-Pixoo
 
