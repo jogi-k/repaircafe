@@ -155,14 +155,17 @@ def attach_file_to_task ( task_id, file_name ):
                          blob=base64_file)
 
 def create_new_task_on_board(form):
-    kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
-    project_props = kb.get_project_by_name(name=kanban_board_name)
-    color = color_textil  if form.repair_object_category.data == "textil" else color_default
-    task_id = kb.create_task(project_id=project_props["id"], 
+    try:
+        kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
+        project_props = kb.get_project_by_name(name=kanban_board_name)
+        color = color_textil  if form.repair_object_category.data == "textil" else color_default
+        task_id = kb.create_task(project_id=project_props["id"], 
                                  title=form.repair_object_brand.data + " : " + form.repair_object_type.data, 
                                  description = "# Besitzer  \n\n" + form.last_name.data + "\n# Fehler: \n\n" + form.repair_object_error.data,
                              color_id=color)
-    return task_id
+        return task_id
+    except:
+        return 0
 
 def get_amount_waiting_tasks( ):
     kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
@@ -172,11 +175,14 @@ def get_amount_waiting_tasks( ):
     return len(waiting_tasks)
 
 def get_amount_active_tasks( ):
-    kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
-    project_props = kb.get_project_by_name(name=kanban_board_name)
-    column_props = kb.get_columns(project_id=project_props["id"])
-    active_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[2]["title"] + "\"" )
-    return len(active_tasks)
+    try:
+        kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
+        project_props = kb.get_project_by_name(name=kanban_board_name)
+        column_props = kb.get_columns(project_id=project_props["id"])
+        active_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[2]["title"] + "\"" )
+        return len(active_tasks)
+    except:
+        return -1
 
 def get_active_time():
     kb = kanboard.Client(kanban_board_api_point, 'jsonrpc', kanboard_token )
@@ -262,8 +268,14 @@ def publicboard():
 @app.route('/overview', methods=['GET', 'POST'])
 def overview():
     active = get_amount_active_tasks()
-    waiting = get_amount_waiting_tasks()
-    waiting_time = get_waiting_time ()  
+    if active == -1:
+        flash('ACHTUNG! Bitte Administrator benachrichtigen, keine Verbindung zum Kanban-Board')
+        active = "n/a"
+        waiting = "n/a"
+        waiting_time = "n/a"
+    else:    
+        waiting = get_amount_waiting_tasks()
+        waiting_time = get_waiting_time ()  
     return render_template('overview.html', active=str(active), queued=str(waiting),waiting_time = str(waiting_time), repair_guys = str(repair_guys),max_repairtime = str(max_repairtime)   )
 
 @app.route('/toggle')
@@ -297,16 +309,19 @@ def toggle():
 
 
 @app.route('/', methods=['GET', 'POST'])
-def test_form():
+def register_form():
     form = RepairCafeForm()
     if form.validate_on_submit():
         rep_nr = create_new_task_on_board(form)
-        flash('Reparatur für : ' + form.repair_object_type.data + " wurde mit der Nummer : " + str(rep_nr) + "  registriert! Bitte mit dieser Nummer zur Registration.   Bitte Ausgabe schliessen ==> " )
-        filename = create_new_document( form, rep_nr )
-        attach_file_to_task( rep_nr, filename ) 
-        WriteExcelEntry( rep_nr , form )
-        print_document( filename )
-        return redirect(url_for('test_form'))
+        if rep_nr == 0:
+            flash('ACHTUNG! Gegenstand konnte nicht registriert werden! Bitte Administrator benachrichtigen, keine Verbindung zum Kanban-Board')
+        else:
+            flash('Reparatur für : ' + form.repair_object_type.data + " wurde mit der Nummer : " + str(rep_nr) + "  registriert! Bitte mit dieser Nummer zur Registration.   Bitte Ausgabe schliessen ==> " )
+            filename = create_new_document( form, rep_nr )
+            attach_file_to_task( rep_nr, filename ) 
+            WriteExcelEntry( rep_nr , form )
+            print_document( filename )
+        return redirect(url_for('register_form'))
     return render_template(
         'form.html',
         form=form,
