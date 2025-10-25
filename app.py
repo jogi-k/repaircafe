@@ -41,6 +41,7 @@ min_waiting_time = 5
 
 app = Flask(__name__)
 app.secret_key = 'dev'
+app.config['WTF_CSRF_TIME_LIMIT']=7200
 
 excel_file = "RepairCafe_Okt_2025.xlsx"
 WORKSHEET_TITLE = "RepairCafe Okt 25"
