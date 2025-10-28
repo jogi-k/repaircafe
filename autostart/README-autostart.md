@@ -1,35 +1,41 @@
 # Autostart 
 
 
-Für autostart wurden zwei verschiedene Konzepte angewendet:
+Fï¿½r autostart wurden zwei verschiedene Konzepte angewendet:
 
-* Der Server-Part, der das Kanban-Board und die repaircafe-App starten soll, wird über ein script in ```/etc/init.d/``` autmatisch beim System-Start gestartet.
-     * Das script dazu befindet sich hier im Unterverzeichnis ```etc-init.d``` und heisst:
-     * ```myrepairserver``` 
-     * und muss entsprechend der lokalen Installation zumindest bezüglich den Aufruf-Pfaden angepasst werden.
-     * Anschliessend muss es nach ```/etc/init.d/``` kopiert werden 
-     * Beim Systemstart ruft es das Script ```cafestart``` hier in diesem Verzeichnis auf, welches wiederum:
-           * das Kanban-Board via docker compose startet
-           * die App im virtual environment startet
+* Der Server-Part, der das Kanban-Board und die repaircafe-App starten soll, wird ï¿½ber ein script in ```/etc/init.d/``` autmatisch beim System-Start gestartet.   
+    * Das script dazu befindet sich hier im Unterverzeichnis ```etc-init.d``` und heisst:
+    * ```myrepairserver``` 
+    * und muss entsprechend der lokalen Installation zumindest bezï¿½glich den Aufruf-Pfaden angepasst werden.
+    * Anschliessend muss es nach ```/etc/init.d/``` kopiert werden 
+    * Beim Systemstart ruft es das Script ```cafestart``` hier in diesem Verzeichnis auf, welches wiederum:
+        * das Kanban-Board via docker compose startet
+        * die App im virtual environment startet
 
-* Der Browser-Part, der das Dashboard für den Eingangs-Bereich anzeigt.
+* Der Browser-Part, der das Dashboard fï¿½r den Eingangs-Bereich anzeigt.
 * Dieser Browser-Part wird durch den automatisch startenden/einloggenden User automatisch gestartet
-* Dies wird über die User-Autostart-Methode im lokalen Verzeichnis ```~/.config/autostart/``` realisiert 
+* Dies wird ï¿½ber die User-Autostart-Methode im lokalen Verzeichnis ```~/.config/autostart/``` realisiert 
     * Das Startfile dazu heisst : ```repairview.desktop```
-    * Auch dieses muss angepasst werden, so dass es das hier befindliche ```startbowser``` - Script aufruft.
+    * Auch dieses muss angepasst werden, so dass es das hier befindliche ```startbrowser``` - Script aufruft.
 
 
 
 ## Verzeichnis-Struktur 
 
+Linke Seite:
+Struktur im Repo
+Rechte Seite : Beispiel auf laufendem System
+
 ```
-    |-- cafestart
-    |-- cafestop
-    |-- config-autostart
-    |   `-- repairview.desktop
-    |-- etc-init.d
-    |   `-- myrepairserver
-    |-- README-autostart.md
-    `-- startbrowser
+           REPO                                 FESTPLATTE
+=================================================================           
+    |-- cafestart                ---->          $HOME/bin/cafestart
+    |-- cafestop                 ---->          $HOME/bin/cafestop
+    |-- etc-init.d                              /etc/init.d
+    |   `-- myrepairserver       ---->          /etc/init.d/myrepairserver  ==> ruft cafestart und cafestop (oben) auf
+    |-- README-autostart.md                     n/a
+    |-- config-autostart                        $HOME/.config/autostart
+    |   `-- repairview.desktop   ---->          $HOME/.config/autostart/repairview.desktop ==> ruft startbrowser (nÃ¤chste Zeile) auf
+    `-- startbrowser             ---->          $HOME/bin/startbrowser
 ```
 
