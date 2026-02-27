@@ -43,11 +43,11 @@ app = Flask(__name__)
 app.secret_key = 'dev'
 app.config['WTF_CSRF_TIME_LIMIT']=7200
 
-excel_file = "RepairCafe_Okt_2025.xlsx"
-WORKSHEET_TITLE = "RepairCafe Okt 25"
+excel_file = "RepairCafe_Mar_2026.xlsx"
+WORKSHEET_TITLE = "RepairCafe Mar 26"
 SOURCE = "Reparaturblatt_A4_template.odt"
-TARGET = "Reparaturblatt_Okt_2025_Nr"
-EXACT_DATE = "18.10.2025"
+TARGET = "Reparaturblatt_Mar_2026_Nr"
+EXACT_DATE = "07.03.2026"
 
 
 bootstrap = Bootstrap5(app)
