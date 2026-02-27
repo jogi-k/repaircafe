@@ -5,3 +5,4 @@ flask-wtf
 odfdo
 kanboard
 openpyxl
+PyPDFForm
