@@ -36,7 +36,7 @@ color_textil = os.getenv('COLOR_TEXTIL',"green")
 public_link = os.getenv('READONLY_LINK')
 
 print("Public Link = " + public_link )
-
+print("Name = " + kanban_board_name)
 min_waiting_time = 5
 
 app = Flask(__name__)
@@ -261,10 +261,10 @@ def publicboard():
 
 @app.route('/overview', methods=['GET', 'POST'])
 def overview():
-    active = get_amount_active_tasks()
+    active_tasks = get_amount_active_tasks()
     waiting = get_amount_waiting_tasks()
     waiting_time = get_waiting_time ()  
-    return render_template('overview.html', active=str(active), queued=str(waiting),waiting_time = str(waiting_time), repair_guys = str(repair_guys),max_repairtime = str(max_repairtime)   )
+    return render_template('overview.html', active=str(active_tasks), queued=str(waiting),waiting_time = str(waiting_time), repair_guys = str(repair_guys),max_repairtime = str(max_repairtime)   )
 
 @app.route('/toggle')
 def toggle():

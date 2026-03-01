@@ -1,3 +1,16 @@
 #!/bin/bash
+
+pin_schalter=17  # Pin 17 is direct beneath ground ...
+gpiochip="gpiochip0"
+
+pinctrl set ${pin_schalter} pu 
+
+
 sleep 20
-chromium --kiosk http://localhost/overview
+schalter=$(gpioget ${gpiochip} ${pin_schalter})
+if [ ${schalter} == "1" ] ; then
+        chromium --password-store=basic --kiosk http://localhost/overview
+else
+	/home/cafe/filme/filmstart
+fi
+
