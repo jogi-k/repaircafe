@@ -2,7 +2,7 @@
 
 from PyPDFForm import PdfWrapper
 
-filled = PdfWrapper("Reparaturblatt_A4_template_for_pdf_form.pdf").fill(
+filled = PdfWrapper("Reparaturblatt_A4_template_form.pdf").fill(
     {
         "Beschreibung_Defekt": "Kristall hat nicht genug Leistung",
         "Datum_1": "07.03.2026",
@@ -20,7 +20,7 @@ filled = PdfWrapper("Reparaturblatt_A4_template_for_pdf_form.pdf").fill(
         "info_konsumentenschutz": True,
         "info_repaircafe": True,
     },
-    flatten=False   # optional, set to True to flatten the filled PDF form
+    flatten=True   # optional, set to True to flatten the filled PDF form
 )
 
-filled.write("Reparaturblatt_filled.pdf")
+filled.write("Reparaturblatt_filled2.pdf")
