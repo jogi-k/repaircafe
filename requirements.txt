@@ -6,3 +6,4 @@ odfdo
 kanboard
 openpyxl
 PyPDFForm
+pymupdf
