@@ -1,35 +1,35 @@
 # repaircafe
 
-Hilfstool für unser [Repaircafe](https://www.turbine-brunnen.ch/repaircafe/) (Registrierung, Doc-Creation, Taskboard, Übersicht, Wartezeit)
+Hilfstool fÃ¼r unser [Repaircafe](https://www.turbine-brunnen.ch/repaircafe/) (Registrierung, Doc-Creation, Taskboard, Ãœbersicht, Wartezeit)
 
-Dies ist eine Sammlung um eine webbasierte Hilfe für unser Repaircafe anzubieten.  
-Das Tool läuft auf einem Raspberry-Pi als Server und bietet folgende Dinge an:
+Dies ist eine Sammlung um eine webbasierte Hilfe fÃ¼r unser Repaircafe anzubieten.  
+Das Tool lÃ¤uft auf einem Raspberry-Pi als Server und bietet folgende Dinge an:
 
-* Webbasierte Registrierung von Kunden und Reparatur-Gegenständen
-* Übertragung der Daten in ein Libreoffice-Document, das wird automatisch durch den Server ausgedruckt
+* Webbasierte Registrierung von Kunden und Reparatur-GegenstÃ¤nden
+* Ãœbertragung der Daten in ein Libreoffice-Document, das wird automatisch durch den Server ausgedruckt
 ( wir sind noch nicht ganz fertig mit der Digitalisierung ...)
-* Übetragung der Daten in ein Kanban-Board um die Warteschlange, die Reparaturen und den Fortschritt zu visiualisieren
-* Übertragung der Daten in eine Datenbank um sie weiter auszuwerten und gesammelt an den Konsumentenschutz zu übertragen (noch nicht, derzeit ist das Kanban-Board die Datenbank...
-* Auswertung der Daten und Anzeige in einer Übersicht
-* mehr später, Ideen gibt es noch genug...
+* Ãœbetragung der Daten in ein Kanban-Board um die Warteschlange, die Reparaturen und den Fortschritt zu visiualisieren
+* Ãœbertragung der Daten in eine Datenbank um sie weiter auszuwerten und gesammelt an den Konsumentenschutz zu Ã¼bertragen (noch nicht, derzeit ist das Kanban-Board die Datenbank...
+* Auswertung der Daten und Anzeige in einer Ãœbersicht
+* mehr spÃ¤ter, Ideen gibt es noch genug...
 
 ## Schema 
 
 ![Schema-Repaircafe](pics/Repaircafe.drawio.svg)
 
 
-## Begrüssungs-Dashboard
+## BegrÃ¼ssungs-Dashboard
 
-Mit diesem Dashboard im Eingangsbereich werden die potentiellen Kunden "begrüsst", so dass sie schon abschätzen können, wie lange sie nach der Registrierung warten müssen, bzw. Kaffee und Kuchen geniessen dürfen
+Mit diesem Dashboard im Eingangsbereich werden die potentiellen Kunden "begrÃ¼sst", so dass sie schon abschÃ¤tzen kÃ¶nnen, wie lange sie nach der Registrierung warten mÃ¼ssen, bzw. Kaffee und Kuchen geniessen dÃ¼rfen
 
 ![Eingangs-Dashboard](pics/dashboard.png)
 
 
 ## Registrierungs-Form
 
-Wenn sie die geschätzte Wartezeit nicht abschreckt, können sie sich dann selbst an einem unserer (bis zu 4, je nach Andrang...) Registrierungs-Laptops registrieren.
-Natürlich helfen wir bei diesem Schritt auch weiterhin mit mehreren Helfern im Eingangsbereich.   
-Wir haben doch oft auch ältere Kunden und Kundinnen.
+Wenn sie die geschÃ¤tzte Wartezeit nicht abschreckt, kÃ¶nnen sie sich dann selbst an einem unserer (bis zu 4, je nach Andrang...) Registrierungs-Laptops registrieren.
+NatÃ¼rlich helfen wir bei diesem Schritt auch weiterhin mit mehreren Helfern im Eingangsbereich.   
+Wir haben doch oft auch Ã¤ltere Kunden und Kundinnen.
 
 
 ![Registrier-Formular](pics/registrier_formular.png)
@@ -37,7 +37,7 @@ Wir haben doch oft auch ältere Kunden und Kundinnen.
 
 ## Unser Formular 
 
-Beim Abschicken des Formulars wird das Dokument automatisch ausgedruckt und es landet als "Story" in unserem Kanban-Board. Die Gäste müssen dann noch beim "Empfang" vorbei, dort unterschreiben sie die Haftungs-Begrenzung und bekommen einen Pager mit Ihrer Nummer. 
+Beim Abschicken des Formulars wird das Dokument automatisch ausgedruckt und es landet als "Story" in unserem Kanban-Board. Die GÃ¤ste mÃ¼ssen dann noch beim "Empfang" vorbei, dort unterschreiben sie die Haftungs-Begrenzung und bekommen einen Pager mit Ihrer Nummer. 
 
 So sieht das Formular dann aus dem Drucker aus:
 
@@ -46,13 +46,13 @@ So sieht das Formular dann aus dem Drucker aus:
 
 ## Unser Kanban-Board
 
-Das Kanban-Board wird (noch) vom Empfang gesteuert. Bei der Selbst-Registrierung durch die Gäste landen die neu registrierten Gegenstände in der Spalte **Neu/Kein Kunde** und erst nach der Unterschrift zur Haftungs-Begrenzung und der Ausgabe des Pagers wird die Karte in die Spalte **Wartend** verschoben.  
+Das Kanban-Board wird (noch) vom Empfang gesteuert. Bei der Selbst-Registrierung durch die GÃ¤ste landen die neu registrierten GegenstÃ¤nde in der Spalte **Neu/Kein Kunde** und erst nach der Unterschrift zur Haftungs-Begrenzung und der Ausgabe des Pagers wird die Karte in die Spalte **Wartend** verschoben.  
 Ab diesem Moment wird die Karte/der Gegenstand dann auch mit in die Berechnung der Wartezeit auf dem Dashboard einbezogen.
 
-Das gleiche Kanbanboard wird in den Reparier-Räumlichkeiten dann auch per Beamer oder zusätzlichen Monitoren den Reparateuren gezeigt, so dass diese wiederum sehen können:
+Das gleiche Kanbanboard wird in den Reparier-RÃ¤umlichkeiten dann auch per Beamer oder zusÃ¤tzlichen Monitoren den Reparateuren gezeigt, so dass diese wiederum sehen kÃ¶nnen:
 
 * Wie gross die Schlange am Empfang / im Cafe ist.
-* Was als nächstes in "der Queue" ist und vielleicht schon bestimmtes Know-How, das sie haben, nach vorne melden können.
+* Was als nÃ¤chstes in "der Queue" ist und vielleicht schon bestimmtes Know-How, das sie haben, nach vorne melden kÃ¶nnen.
 
 
 
@@ -72,7 +72,7 @@ Technologisch wird dazu benutzt:
 
 # Installation
 
-(Ziel ist es, das alles in ein docker-compose zu packen, momentan ist das nur für das Kanban-Board der Fall, das Python-Programm muss noch von Hand installiert werden) 
+(Ziel ist es, das alles in ein docker-compose zu packen, momentan ist das nur fÃ¼r das Kanban-Board der Fall, das Python-Programm muss noch von Hand installiert werden) 
 
 * Starten des Kanbanboards : docker-compose / docker compose im Unterverzeichnis kanboard ```docker compose -f kanboard/docker-compose.yml up -d```
 * Anlegen eines Projektes und Export des API-Keys
@@ -82,28 +82,28 @@ Technologisch wird dazu benutzt:
     * Ein Projekt Anlegen : ```http://localhost:8880/project/create```
     * Den Projekt-Namen notieren
     * ![ProjectName](pics/project_name.png) 
-* Übertragen der Daten in Umgebungs-Variablen/.env-File, siehe env-template , bitte kopieren nach .env und mit den ermittelten Werten befüllen 
+* Ãœbertragen der Daten in Umgebungs-Variablen/.env-File, siehe env-template , bitte kopieren nach .env und mit den ermittelten Werten befÃ¼llen 
 * Virtual environment anlegen : ``` python -m venv venv``` (einmalig)
 * Virtual environment aktivieren : ```source venv/bin/activate```
 * Requirements installieren:  ```pip install -r requirements.txt``` (einmalig)
 * Flask-Server starten : ```python app.py```
-* Browser starten, folgende Routes werden darzeit unterstütztz:
+* Browser starten, folgende Routes werden darzeit unterstÃ¼tztz:
     * ```localhost:8880``` :  Kanban-Board
-    * ```localhost``` : Eingabe-Formular für die Selbstregistrierung
-    * ```localhost/overview``` : das Übersichts-Dashboard für den Empfang
+    * ```localhost``` : Eingabe-Formular fÃ¼r die Selbstregistrierung
+    * ```localhost/overview``` : das Ãœbersichts-Dashboard fÃ¼r den Empfang
     * ```localhost/config``` : Konfiguration der angestrebten Reparatur-Dauer und der Anzahl Reparierenden  
     * ```localhost/board ``` : Nochmal das Kanbanboard, einfacher zu merken ...  
     * ```localhost/publicboard ``` : Nochmal das Kanbanboard, allerdings read only ...  
-    * ```localhost/toggle      ``` : Ein alternierendes Board zwischen Dashboard und read-only Kanban, für die Reparierenden ...  
+    * ```localhost/toggle      ``` : Ein alternierendes Board zwischen Dashboard und read-only Kanban, fÃ¼r die Reparierenden ...  
 
 
 # Autostart
 
-Die Installation geht davon aus, dass der Raspberry Pi Server für mehrere Dinge gleichzeitig zuständig ist 
+Die Installation geht davon aus, dass der Raspberry Pi Server fÃ¼r mehrere Dinge gleichzeitig zustÃ¤ndig ist 
 
 * Bereitstellng des Kanban-Boards
-* Bereitstellung der repaircafe Web-App mit Formular, Übersicht, Fernsteuerung des Kanban-Boards etc
-* Anzeige des Übersichts-Dashboards an einem angeschlossenen Monitor
+* Bereitstellung der repaircafe Web-App mit Formular, Ãœbersicht, Fernsteuerung des Kanban-Boards etc
+* Anzeige des Ãœbersichts-Dashboards an einem angeschlossenen Monitor
 
 Dazu gibt es ein paar autostart-Helper im Unterverzeichnis ```autostart``` ,  dort befindet sich eine [Readme-Datei](autostart/README-autostart.md)
 
@@ -137,6 +137,9 @@ Dazu gibt es ein paar autostart-Helper im Unterverzeichnis ```autostart``` ,  do
 * Configuration of Kanboard : https://github.com/kanboard/kanboard/issues/4894
 * base64-encode a file : https://gist.github.com/juliensalinas/15789d241f28b1ce45f0c22e11ba894a
 * Allow binding on port 80 for normal user : e.g. https://superuser.com/a/1482188
+* Changing database on raspberry pi:
+    * ```docker exec -it kanboard-kanboard-1 /bin/bash```
+    * sqlite-Database is in /var/www/app/data 
 
 # Installation Registrier-Laptops
 
