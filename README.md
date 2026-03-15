@@ -121,7 +121,13 @@ Dazu gibt es ein paar autostart-Helper im Unterverzeichnis ```autostart``` ,  do
 * Extended: kaneo , Trello-Artig : https://github.com/usekaneo/kaneo , sieht noch besser aus, aber weder mit lite noch mit standard-config schnell zum Laufen gebracht..
 * Extended: wekan, https://github.com/wekan/wekan/tree/main, versucht via snap, hat nicht funktioniert, konnte mich nicht einloggen.
 
+## Nutzung der Pager automatisch
 
+* Einfuegen einer zusaetzlichen Spalte "Paging"
+* Callback beim Eintritt in die Spalte
+* Triggert Raspberry PI um den Pager zu Pagen
+* Siehe z.B. https://github.com/eydam-prototyping/cc1101
+* und : https://salmg.net/2017/09/20/cc1101-transceiver-raspberry-pi/
 
 ## Erweiterung der Anzeige auf Divoom-Pixoo
 
