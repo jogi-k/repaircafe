@@ -49,7 +49,7 @@ excel_file = f"RepairCafe_{app.config["REPAIRCAFE_DATE_ISO"]}.xlsx"   # coming f
 WORKSHEET_TITLE = f"RepairCafe {app.config["REPAIRCAFE_DATE_ISO"]}"
 SOURCE = "Reparaturblatt_A4_template.odt"
 TARGET = f"Reparaturblatt_{app.config["REPAIRCAFE_DATE_ISO"]}_Nr"
-EXACT_DATE = f"{app.config["REPAIRCAFE_DATE_ISO"]}"
+EXACT_DATE = f"{app.config["REPAIRCAFE_DATE_GERMAN"]}"
 
 
 bootstrap = Bootstrap5(app)
