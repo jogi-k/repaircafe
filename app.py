@@ -6,6 +6,7 @@ from flask_wtf import FlaskForm, CSRFProtect
 from wtforms.validators import DataRequired, Length, Regexp, InputRequired
 from wtforms.fields import *
 from flask_bootstrap import Bootstrap5, SwitchField
+import config
 import kanboard
 import datetime
 import base64
@@ -41,17 +42,25 @@ min_waiting_time = 5
 
 app = Flask(__name__)
 app.secret_key = 'dev'
+app.config.from_object(config)  # Load all vars from config.py'
 app.config['WTF_CSRF_TIME_LIMIT']=7200
 
-excel_file = "RepairCafe_Mar_2026.xlsx"
-WORKSHEET_TITLE = "RepairCafe Mar 26"
+excel_file = f"RepairCafe_{app.config["REPAIRCAFE_DATE_ISO"]}.xlsx"   # coming from config.py
+WORKSHEET_TITLE = f"RepairCafe {app.config["REPAIRCAFE_DATE_ISO"]}"
 SOURCE = "Reparaturblatt_A4_template.odt"
-TARGET = "Reparaturblatt_Mar_2026_Nr"
-EXACT_DATE = "07.03.2026"
+TARGET = f"Reparaturblatt_{app.config["REPAIRCAFE_DATE_ISO"]}_Nr"
+EXACT_DATE = f"{app.config["REPAIRCAFE_DATE_GERMAN"]}"
 
 
 bootstrap = Bootstrap5(app)
 csrf = CSRFProtect(app)
+
+
+# Make config available in ALL templates
+@app.context_processor
+def inject_config():
+    return dict(config=app.config)
+
 
 
 class RepairCafeForm(FlaskForm):

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Turbine Brunnen Repaircafe</h1>
+<h1>Turbine Brunnen Repaircafe {{ config.REPAIRCAFE_DATE_HUMAN }}</h1>
 <ul>
     <li><a href="{{ url_for('register_form') }}">Form</a></li>
     <li><a href="{{ url_for('board') }}">Board</a></li>
