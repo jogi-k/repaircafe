@@ -118,8 +118,8 @@ def WriteExcelHeader ():
     worksheet.cell(row=1,column=13,value="Gegenstand")
     worksheet.cell(row=1,column=14,value="Hersteller")
     worksheet.cell(row=1,column=15,value="Kategorie")
-    worksheet.cell(row=1,column=16,value="Defekt")
-    worksheet.cell(row=1,column=17,value="Repariert?")
+    worksheet.cell(row=1,column=16,value="Repariert?")
+    worksheet.cell(row=1,column=17,value="Defekt")
 
     workbook.save(excel_file)
 
@@ -142,7 +142,7 @@ def WriteExcelEntry( number, form ):
     worksheet.cell(row=number + 1,column=13,value=form.repair_object_type.data )
     worksheet.cell(row=number + 1,column=14,value=form.repair_object_brand.data )
     worksheet.cell(row=number + 1,column=15,value=form.repair_object_category.data )
-    worksheet.cell(row=number + 1,column=16,value=form.repair_object_error.data )
+    worksheet.cell(row=number + 1,column=17,value=form.repair_object_error.data )
     workbook.save(excel_file)
 
 def base64_encode_file( file_name ):
