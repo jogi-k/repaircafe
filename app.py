@@ -45,11 +45,11 @@ app.secret_key = 'dev'
 app.config.from_object(config)  # Load all vars from config.py'
 app.config['WTF_CSRF_TIME_LIMIT']=7200
 
-excel_file = f"RepairCafe_{app.config["REPAIRCAFE_DATE_ISO"]}.xlsx"   # coming from config.py
-WORKSHEET_TITLE = f"RepairCafe {app.config["REPAIRCAFE_DATE_ISO"]}"
+excel_file = f"RepairCafe_{app.config['REPAIRCAFE_DATE_ISO']}.xlsx"   # coming from config.py
+WORKSHEET_TITLE = f"RepairCafe {app.config['REPAIRCAFE_DATE_ISO']}"
 SOURCE = "Reparaturblatt_A4_template.odt"
-TARGET = f"Reparaturblatt_{app.config["REPAIRCAFE_DATE_ISO"]}_Nr"
-EXACT_DATE = f"{app.config["REPAIRCAFE_DATE_GERMAN"]}"
+TARGET = f"Reparaturblatt_{app.config['REPAIRCAFE_DATE_ISO']}_Nr"
+EXACT_DATE = f"{app.config['REPAIRCAFE_DATE_GERMAN']}"
 
 
 bootstrap = Bootstrap5(app)
