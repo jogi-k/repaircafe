@@ -27,7 +27,7 @@ def fetch_meta_data_from_task ( task_id):
 
 
 def create_new_task_on_board():
-        kb = kanboard.Client('kanban_board_api_point', 'jsonrpc',kanboard_token )
+        kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
         project_props = kb.get_project_by_name(name=kanban_board_name)
         task_id = kb.create_task(project_id=project_props["id"], 
                                  title="Hugo", 
@@ -37,21 +37,21 @@ def create_new_task_on_board():
         return task_id
 
 def get_amount_waiting_tasks( ):
-        kb = kanboard.Client('kanban_board_api_point', 'jsonrpc',kanboard_token )
+        kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
         project_props = kb.get_project_by_name(name=kanban_board_name)
         column_props = kb.get_columns(project_id=project_props["id"])
         waiting_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[1]["title"] + "\"" )
         return len(waiting_tasks)
 
 def get_amount_active_tasks( ):
-        kb = kanboard.Client('kanban_board_api_point', 'jsonrpc',kanboard_token )
+        kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
         project_props = kb.get_project_by_name(name=kanban_board_name)
         column_props = kb.get_columns(project_id=project_props["id"])
         active_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[2]["title"] + "\"" )
         return len(active_tasks)
 
 def get_active_time():
-    kb = kanboard.Client('kanban_board_api_point', 'jsonrpc', kanboard_token )
+    kb = kanboard.Client(kanban_board_api_point, 'jsonrpc', kanboard_token )
     project_props = kb.get_project_by_name(name=kanban_board_name)
     column_props = kb.get_columns(project_id=project_props["id"])
     active_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[2]["title"] + "\"" )
@@ -84,4 +84,8 @@ def get_waiting_time( ):
 if __name__ == '__main__':
 #    my_task_id = create_new_task_on_board( )
 #    print("Task-ID = " + str(my_task_id) )
-    fetch_meta_data_from_task( 32 )
+    # fetch_meta_data_from_task( 32 )
+    print("amount tasks")
+    tasks = get_amount_active_tasks()
+    print(tasks)
+
