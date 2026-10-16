@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% from 'bootstrap5/form.html' import render_form, render_field, render_form_row %}
 
+{% block styles %}
+    {% include '_contrast_styles.html' %}
+{% endblock %}
+
 {% block content %}
 
     <h1>Turbine Brunnen : Repaircafe {{ config.REPAIRCAFE_DATE_HUMAN }}</h1>
