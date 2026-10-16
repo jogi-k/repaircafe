@@ -344,7 +344,11 @@ def config_form():
     global repair_guys
     global print_active
     print("Before: Repairtime = " + str(max_repairtime) + "Guys = " + str(repair_guys) )
-    form = ConfigForm()
+    form = ConfigForm(
+        max_repairtime=str(max_repairtime),
+        repair_guys=str(repair_guys),
+        print_active=bool(print_active)
+    )
     if form.validate_on_submit():
         flash('Konfiguration registriert !')
         max_repairtime = int(form.max_repairtime.data)
@@ -355,7 +359,7 @@ def config_form():
     return render_template(
         'config.html',
         form=form,
-        config_form=ConfigForm()
+        config_form=form
     )
 if __name__ == '__main__':
     
