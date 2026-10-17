@@ -26,3 +26,9 @@ COLOR_DEFAULT="blue"
 
 # Colors of the cards for textile repairs 
 COLOR_TEXTIL="green"
+
+# Log-Level for the application : DEBUG, INFO, WARNING, ERROR
+LOG_LEVEL=INFO
+
+# Path of the logfile (relative to the app-directory), directory is created if missing
+LOG_FILE=logs/repaircafe.log

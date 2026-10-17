@@ -7,3 +7,4 @@ kanboard/kanboard_plugins/*
 kanboard/kanboard_ssl/*
 __pycache__/*
 venv/*
+logs/*
