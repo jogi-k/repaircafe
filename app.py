@@ -10,8 +10,10 @@ import config
 import kanboard
 import datetime
 import base64
+import logging
 import subprocess
-import time 
+import time
+from logging.handlers import RotatingFileHandler
 
 from pathlib import Path
 
@@ -25,18 +27,88 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+LOG_FILE = os.getenv('LOG_FILE', 'logs/repaircafe.log')
+LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
+LOG_MAX_BYTES = 1000 * 1000
+LOG_BACKUP_COUNT = 3
+
+
+def setup_logging():
+    """Configure the application logger.
+
+    Idempotent: the Flask debug reloader imports the module twice,
+    so existing handlers must not be duplicated.
+    """
+    log = logging.getLogger('repaircafe')
+    if log.handlers:
+        return log
+    try:
+        log.setLevel(LOG_LEVEL)
+    except ValueError:
+        log.setLevel(logging.INFO)
+    formatter = logging.Formatter(
+        '%(asctime)s %(levelname)s [%(name)s] %(message)s')
+    try:
+        log_dir = os.path.dirname(LOG_FILE)
+        if log_dir:
+            os.makedirs(log_dir, exist_ok=True)
+        file_handler = RotatingFileHandler(
+            LOG_FILE, maxBytes=LOG_MAX_BYTES, backupCount=LOG_BACKUP_COUNT,
+            encoding='utf-8')
+        file_handler.setFormatter(formatter)
+        log.addHandler(file_handler)
+    except OSError as e:
+        # No writable log file: keep console logging alive, but say so.
+        log.addHandler(logging.StreamHandler())
+        log.error("Cannot open log file %s (%s), logging to console only",
+                  LOG_FILE, e)
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    log.addHandler(console_handler)
+    log.propagate = False
+    return log
+
+
+logger = setup_logging()
+
+
+def get_env_int(name, default):
+    """Read an integer env variable, falling back to a default on problems."""
+    raw = os.getenv(name)
+    if raw is None or raw == '':
+        logger.warning("Environment variable %s not set, using default %s",
+                       name, default)
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        logger.error("Environment variable %s has invalid value '%s', "
+                     "using default %s", name, raw, default)
+        return default
+
 
 kanboard_token = os.getenv('KANBOARD_TOKEN')
 kanban_board_name = os.getenv('KANBOARD_BOARD_NAME')
-kanban_board_api_point = os.getenv('KANBOARD_ENDPOINT',"http://localhost:8880/jsonrpc.php")
-max_repairtime = int(os.getenv('REPARATUR_TIME',40))
-repair_guys = int(os.getenv('REPARATEURE',10))
-print_active = int(os.getenv('PRINT_AUTO',0))
-color_default = os.getenv('COLOR_DEFAULT',"blue")
-color_textil = os.getenv('COLOR_TEXTIL',"green")
+kanban_board_api_point = os.getenv('KANBOARD_ENDPOINT', "http://localhost:8880/jsonrpc.php")
+max_repairtime = get_env_int('REPARATUR_TIME', 40)
+repair_guys = get_env_int('REPARATEURE', 10)
+print_active = get_env_int('PRINT_AUTO', 0)
+color_default = os.getenv('COLOR_DEFAULT', "blue")
+color_textil = os.getenv('COLOR_TEXTIL', "green")
 public_link = os.getenv('READONLY_LINK')
 
-print("Public Link = " + public_link )
+if not kanboard_token:
+    logger.error("KANBOARD_TOKEN is not set, no connection to the "
+                 "Kanban-Board will be possible")
+if not kanban_board_name:
+    logger.error("KANBOARD_BOARD_NAME is not set, no connection to the "
+                 "Kanban-Board will be possible")
+if not public_link:
+    logger.warning("READONLY_LINK is not set, /publicboard will show "
+                   "an empty URL")
+logger.info("Kanboard endpoint: %s, board: %s",
+            kanban_board_api_point, kanban_board_name)
+logger.info("Public link = %s", public_link)
 
 min_waiting_time = 5
 
@@ -60,6 +132,24 @@ csrf = CSRFProtect(app)
 @app.context_processor
 def inject_config():
     return dict(config=app.config)
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    logger.warning("404 Not Found: %s %s", request.method, request.path)
+    return render_template('error.html',
+                           error_code=404,
+                           error_message='Diese Seite existiert nicht.'), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    logger.exception("Internal server error on %s %s: %s",
+                     request.method, request.path, error)
+    return render_template('error.html',
+                           error_code=500,
+                           error_message=('Interner Fehler, bitte Administrator '
+                                          'benachrichtigen.')), 500
 
 
 
@@ -94,11 +184,15 @@ class ConfigForm(FlaskForm):
     submit = SubmitField("Konfiguration sichern")
 
 def WriteExcelHeader ():
-    try: 
+    try:
         workbook = load_workbook(filename = excel_file )
-    except FileNotFoundError: 
+    except FileNotFoundError:
+        logger.info("Excel file %s does not exist yet, creating it", excel_file)
         workbook = Workbook()
-        
+    except Exception:
+        logger.exception("Could not open excel file %s", excel_file)
+        return
+
     worksheet = workbook.active
 
     worksheet.title=WORKSHEET_TITLE
@@ -121,11 +215,21 @@ def WriteExcelHeader ():
     worksheet.cell(row=1,column=16,value="Repariert?")
     worksheet.cell(row=1,column=17,value="Defekt")
 
-    workbook.save(excel_file)
+    try:
+        workbook.save(excel_file)
+    except Exception:
+        logger.exception("Could not write excel header to %s", excel_file)
 
 def WriteExcelEntry( number, form ):
-
-    workbook = load_workbook(filename = excel_file )
+    try:
+        workbook = load_workbook(filename = excel_file )
+    except FileNotFoundError:
+        logger.error("Excel file %s not found, entry for task %s not written",
+                      excel_file, number)
+        return
+    except Exception:
+        logger.exception("Could not open excel file %s", excel_file)
+        return
     worksheet = workbook.active
     worksheet.cell(row=number + 1,column=1,value=form.last_name.data )
     worksheet.cell(row=number + 1,column=2,value=form.first_name.data )
@@ -143,7 +247,11 @@ def WriteExcelEntry( number, form ):
     worksheet.cell(row=number + 1,column=14,value=form.repair_object_brand.data )
     worksheet.cell(row=number + 1,column=15,value=form.repair_object_category.data )
     worksheet.cell(row=number + 1,column=17,value=form.repair_object_error.data )
-    workbook.save(excel_file)
+    try:
+        workbook.save(excel_file)
+    except Exception:
+        logger.exception("Could not write excel entry for task %s to %s",
+                         number, excel_file)
 
 def base64_encode_file( file_name ):
 
@@ -155,65 +263,123 @@ def base64_encode_file( file_name ):
         return base64_output
 
 
-def attach_file_to_task ( task_id, file_name ):
-    kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
+def get_board():
+    """Return (kanboard client, project id) for the configured board.
+
+    Raises kanboard.ClientError when the board is unreachable or the
+    project is unknown.
+    """
+    kb = kanboard.Client(kanban_board_api_point, 'jsonrpc', kanboard_token)
     project_props = kb.get_project_by_name(name=kanban_board_name)
-    base64_file = base64_encode_file(file_name)
-    kb.create_task_file( project_id=project_props["id"], 
-                         task_id=task_id,
-                         filename=file_name,
-                         blob=base64_file)
+    return kb, project_props["id"]
+
+
+def attach_file_to_task ( task_id, file_name ):
+    """Attach a file to a board task. Returns True on success."""
+    try:
+        kb, project_id = get_board()
+        base64_file = base64_encode_file(file_name)
+        kb.create_task_file( project_id=project_id,
+                             task_id=task_id,
+                             filename=file_name,
+                             blob=base64_file)
+        logger.info("Attached %s to task %s", file_name, task_id)
+        return True
+    except kanboard.ClientError as e:
+        logger.error("Kanboard error while attaching %s to task %s: %s",
+                     file_name, task_id, e)
+    except Exception:
+        logger.exception("Could not attach %s to task %s", file_name, task_id)
+    return False
 
 def create_new_task_on_board(form):
+    """Create a board task from the form. Returns the task id or 0 on error."""
     try:
-        kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
-        project_props = kb.get_project_by_name(name=kanban_board_name)
+        kb, project_id = get_board()
         color = color_textil  if form.repair_object_category.data == "textil" else color_default
-        task_id = kb.create_task(project_id=project_props["id"], 
-                                 title=form.repair_object_brand.data + " : " + form.repair_object_type.data, 
+        task_id = kb.create_task(project_id=project_id,
+                                 title=form.repair_object_brand.data + " : " + form.repair_object_type.data,
                                  description = "# Besitzer  \n\n" + form.last_name.data + "\n# Fehler: \n\n" + form.repair_object_error.data,
                              color_id=color)
+        if not task_id:
+            logger.error("Kanboard refused to create a task for object %s",
+                         form.repair_object_type.data)
+            return 0
+        logger.info("Created task %s on board for object %s",
+                    task_id, form.repair_object_type.data)
         return task_id
-    except:
-        return 0
+    except kanboard.ClientError as e:
+        logger.error("Kanboard error while creating a task for object %s: %s",
+                     form.repair_object_type.data, e)
+    except Exception:
+        logger.exception("Unexpected error while creating a task for object %s",
+                         form.repair_object_type.data)
+    return 0
 
 def get_amount_waiting_tasks( ):
-    kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
-    project_props = kb.get_project_by_name(name=kanban_board_name)
-    column_props = kb.get_columns(project_id=project_props["id"])
-    waiting_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[1]["title"] + "\"" )
-    return len(waiting_tasks)
+    """Return the number of tasks in the waiting column, or -1 on error."""
+    try:
+        kb, project_id = get_board()
+        column_props = kb.get_columns(project_id=project_id)
+        waiting_tasks = kb.search_tasks(project_id=project_id, query="column:" + "\"" + column_props[1]["title"] + "\"" )
+        return len(waiting_tasks)
+    except kanboard.ClientError as e:
+        logger.error("Kanboard error while counting waiting tasks: %s", e)
+    except Exception:
+        logger.exception("Unexpected error while counting waiting tasks")
+    return -1
 
 def get_amount_active_tasks( ):
+    """Return the number of tasks in the working column, or -1 on error."""
     try:
-        kb = kanboard.Client(kanban_board_api_point, 'jsonrpc',kanboard_token )
-        project_props = kb.get_project_by_name(name=kanban_board_name)
-        column_props = kb.get_columns(project_id=project_props["id"])
-        active_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[2]["title"] + "\"" )
+        kb, project_id = get_board()
+        column_props = kb.get_columns(project_id=project_id)
+        active_tasks = kb.search_tasks(project_id=project_id, query="column:" + "\"" + column_props[2]["title"] + "\"" )
         return len(active_tasks)
-    except:
-        return -1
+    except kanboard.ClientError as e:
+        logger.error("Kanboard error while counting active tasks: %s", e)
+    except Exception:
+        logger.exception("Unexpected error while counting active tasks")
+    return -1
 
 def get_active_time():
-    kb = kanboard.Client(kanban_board_api_point, 'jsonrpc', kanboard_token )
-    project_props = kb.get_project_by_name(name=kanban_board_name)
-    column_props = kb.get_columns(project_id=project_props["id"])
-    active_tasks = kb.search_tasks(project_id=project_props["id"], query="column:" + "\"" + column_props[2]["title"] + "\"" )
+    """Return the total repair time of active tasks in minutes, or -1 on error."""
+    try:
+        kb, project_id = get_board()
+        column_props = kb.get_columns(project_id=project_id)
+        active_tasks = kb.search_tasks(project_id=project_id, query="column:" + "\"" + column_props[2]["title"] + "\"" )
+    except kanboard.ClientError as e:
+        logger.error("Kanboard error while calculating active time: %s", e)
+        return -1
+    except Exception:
+        logger.exception("Unexpected error while calculating active time")
+        return -1
+
     now = datetime.datetime.now()
-    summ_in_minutes = 0 
+    summ_in_minutes = 0
     for active_task in active_tasks:
-        starttime = datetime.datetime.fromtimestamp(active_task["date_moved"]) 
+        try:
+            starttime = datetime.datetime.fromtimestamp(active_task["date_moved"])
+        except (KeyError, TypeError, ValueError, OSError):
+            logger.warning("Task %s has an invalid date_moved (%r), "
+                           "skipping it in the active-time calculation",
+                           active_task.get("id"), active_task.get("date_moved"))
+            continue
         duration = now - starttime
         duration_minutes = int( duration.total_seconds() / 60 )
         if duration_minutes  > max_repairtime:
             duration_minutes = max_repairtime
-        summ_in_minutes = summ_in_minutes + duration_minutes 
+        summ_in_minutes = summ_in_minutes + duration_minutes
     return int(summ_in_minutes)
 
 def get_waiting_time( ):
     waiting_tasks = get_amount_waiting_tasks()
     active_tasks = get_amount_active_tasks()
     active_tasks_active_time = get_active_time()
+
+    if -1 in (waiting_tasks, active_tasks, active_tasks_active_time):
+        logger.error("Kanban data incomplete, cannot calculate waiting time")
+        return -1
 
     if waiting_tasks + active_tasks < repair_guys :
         return min_waiting_time
@@ -232,34 +398,46 @@ def get_waiting_time( ):
 
 def save_new(document: Document, name: str):
     new_path = name
-    print("Saving:", new_path)
+    logger.info("Saving repair document: %s", new_path)
     document.save(new_path, pretty=True)
 
 def create_new_document( form, number ):
-
-    document = Document(SOURCE)
+    """Create the repair document for a task. Returns the file name or None."""
     target_name = TARGET + "_" + str(number) + ".odt"
-    body = document.body
+    try:
+        document = Document(SOURCE)
+        body = document.body
 
-    body.replace("11.11.1111", EXACT_DATE)
-    body.replace("2222", str(number) )
-    body.replace("Hugo Egon", form.first_name.data + " " + form.last_name.data )
-    body.replace("Lichtschwert", form.repair_object_type.data )
-    body.replace("Force", form.repair_object_brand.data )
-    body.replace("Kristall", form.repair_object_error.data)
-    body.replace("hugo@egon", form.email.data)
-    if form.info_newspaper.data : body.replace("□ Zeitung", "☑ Zeitung") 
-    if form.info_poster.data  : body.replace("□ Plakataushang", "☑ Plakataushang")     
-    if form.info_social_media.data  : body.replace("□ Internet / Soziale Medien", "☑ Internet / Soziale Medien")     
-    if form.info_website.data  : body.replace("□ Newsletter", "☑ Newsletter/Website")     
-    if form.turbine_mailinglist.data  : body.replace("□ Repaircafes in der Turbine", "☑ Repaircafes in der Turbine")     
-    if form.konsumenten_mailinglist.data : body.replace("□ Reparaturthemen allgemein", "☑ Reparaturthemen allgemein")     
-    save_new(document, target_name )
-    return target_name
+        body.replace("11.11.1111", EXACT_DATE)
+        body.replace("2222", str(number) )
+        body.replace("Hugo Egon", form.first_name.data + " " + form.last_name.data )
+        body.replace("Lichtschwert", form.repair_object_type.data )
+        body.replace("Force", form.repair_object_brand.data )
+        body.replace("Kristall", form.repair_object_error.data)
+        body.replace("hugo@egon", form.email.data)
+        if form.info_newspaper.data : body.replace("□ Zeitung", "☑ Zeitung")
+        if form.info_poster.data  : body.replace("□ Plakataushang", "☑ Plakataushang")
+        if form.info_social_media.data  : body.replace("□ Internet / Soziale Medien", "☑ Internet / Soziale Medien")
+        if form.info_website.data  : body.replace("□ Newsletter", "☑ Newsletter/Website")
+        if form.turbine_mailinglist.data  : body.replace("□ Repaircafes in der Turbine", "☑ Repaircafes in der Turbine")
+        if form.konsumenten_mailinglist.data : body.replace("□ Reparaturthemen allgemein", "☑ Reparaturthemen allgemein")
+        save_new(document, target_name )
+        return target_name
+    except Exception:
+        logger.exception("Could not create repair document %s for task %s",
+                         target_name, number)
+    return None
 
 def print_document( filename ):
-    if print_active == 1 : 
-        subprocess.Popen(["libreoffice", "--norestore", "-p", filename ])
+    """Print a document, if auto-printing is enabled. Returns True on success."""
+    if print_active == 1 :
+        try:
+            subprocess.Popen(["libreoffice", "--norestore", "-p", filename ])
+            logger.info("Started printing of %s", filename)
+            return True
+        except Exception:
+            logger.exception("Could not start printing of %s", filename)
+    return False
 
 @app.route('/oldindex')
 def index():
@@ -283,9 +461,13 @@ def overview():
         active = "n/a"
         waiting = "n/a"
         waiting_time = "n/a"
-    else:    
+    else:
         waiting = get_amount_waiting_tasks()
-        waiting_time = get_waiting_time ()  
+        waiting_time = get_waiting_time ()
+        if waiting == -1 or waiting_time == -1:
+            flash('ACHTUNG! Bitte Administrator benachrichtigen, keine Verbindung zum Kanban-Board')
+            waiting = "n/a"
+            waiting_time = "n/a"
     return render_template('overview.html', active=str(active), queued=str(waiting),waiting_time = str(waiting_time), repair_guys = str(repair_guys),max_repairtime = str(max_repairtime)   )
 
 @app.route('/toggle')
@@ -327,10 +509,16 @@ def register_form():
             flash('ACHTUNG! Gegenstand konnte nicht registriert werden! Bitte Administrator benachrichtigen, keine Verbindung zum Kanban-Board')
         else:
             flash('Reparatur für : ' + form.repair_object_type.data + " wurde mit der Nummer : " + str(rep_nr) + "  registriert! Bitte mit dieser Nummer zur Registration.   Bitte Ausgabe schliessen ==> " )
+            logger.info("Task %s registered on the board", rep_nr)
             filename = create_new_document( form, rep_nr )
-            attach_file_to_task( rep_nr, filename ) 
+            if filename is None:
+                flash('ACHTUNG! Reparaturblatt konnte nicht erstellt werden! Bitte Administrator benachrichtigen')
+            else:
+                if not attach_file_to_task( rep_nr, filename ):
+                    flash('ACHTUNG! Reparaturblatt konnte nicht an die Karte angehängt werden!')
+                if not print_document( filename ):
+                    flash('ACHTUNG! Reparaturblatt konnte nicht gedruckt werden!')
             WriteExcelEntry( rep_nr , form )
-            print_document( filename )
         return redirect(url_for('register_form'))
     return render_template(
         'form.html',
@@ -343,7 +531,8 @@ def config_form():
     global max_repairtime
     global repair_guys
     global print_active
-    print("Before: Repairtime = " + str(max_repairtime) + "Guys = " + str(repair_guys) )
+    logger.debug("Config page: repairtime = %s, repair guys = %s",
+                 max_repairtime, repair_guys )
     form = ConfigForm(
         max_repairtime=str(max_repairtime),
         repair_guys=str(repair_guys),
@@ -354,15 +543,19 @@ def config_form():
         max_repairtime = int(form.max_repairtime.data)
         repair_guys = int(form.repair_guys.data)
         print_active = int(form.print_active.data)
-        print("After: Repairtime = " + str(max_repairtime) + "Guys = " + str(repair_guys) )
+        logger.info("New configuration: repairtime = %s, repair guys = %s, "
+                     "auto-print = %s",
+                     max_repairtime, repair_guys, print_active)
         return redirect(url_for('overview'))
     return render_template(
         'config.html',
         form=form,
         config_form=form
     )
+
 if __name__ == '__main__':
-    
+
+    logger.info("Starting Repaircafe web application")
     WriteExcelHeader ()
     app.run(debug=True, host='0.0.0.0', port=80 )
 
