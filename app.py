@@ -166,10 +166,10 @@ class RepairCafeForm(FlaskForm):
     info_poster = BooleanField('Plakataushang')
     info_social_media = BooleanField('Social Media')
     info_website = BooleanField('Newsletter/Website')
+    info_email = BooleanField('Email')
     info_mouth = BooleanField('Mund zu Mund')
     info_other = BooleanField('Anderes')
-    info_other_what = StringField("")
-    repair_object_type = StringField("Gegenstand *", validators=[DataRequired(), Length(2, 200)])
+    repair_object_type = StringField("Produkt *", validators=[DataRequired(), Length(2, 200)])
     repair_object_brand = StringField("Hersteller")
     repair_object_category = RadioField("Kategorie *", validators=[InputRequired()], choices=[('handy', 'Handy/Tablet/Unterhaltungselektronik'), ('computer', 'Computer/Laptop'), ('haushalt', 'Haushaltsgeräte'), ('holz_etc', 'Holz/Metall/Mechanik'), ("textil", "Textilien/Leder"), ("sonstiges", "Übriges/Allerlei")])
     repair_object_error = TextAreaField("Fehler-Beschreibung, bitte so genau wie möglich! *", validators=[DataRequired(), Length(2, 1000)])
@@ -209,11 +209,13 @@ def WriteExcelHeader ():
     worksheet.cell(row=1,column=10,value="Plakat")
     worksheet.cell(row=1,column=11,value="Social Media")
     worksheet.cell(row=1,column=12,value="Newsletter")
-    worksheet.cell(row=1,column=13,value="Gegenstand")
-    worksheet.cell(row=1,column=14,value="Hersteller")
-    worksheet.cell(row=1,column=15,value="Kategorie")
-    worksheet.cell(row=1,column=16,value="Repariert?")
-    worksheet.cell(row=1,column=17,value="Defekt")
+    worksheet.cell(row=1,column=13,value="Email")
+    worksheet.cell(row=1,column=14,value="Anderes")
+    worksheet.cell(row=1,column=15,value="Hersteller")
+    worksheet.cell(row=1,column=16,value="Gegenstand")
+    worksheet.cell(row=1,column=17,value="Kategorie")
+    worksheet.cell(row=1,column=18,value="Repariert?")
+    worksheet.cell(row=1,column=19,value="Defekt")
 
     try:
         workbook.save(excel_file)
@@ -243,10 +245,12 @@ def WriteExcelEntry( number, form ):
     worksheet.cell(row=number + 1,column=10,value=form.info_poster.data )
     worksheet.cell(row=number + 1,column=11,value=form.info_social_media.data )
     worksheet.cell(row=number + 1,column=12,value=form.info_website.data )
-    worksheet.cell(row=number + 1,column=13,value=form.repair_object_type.data )
-    worksheet.cell(row=number + 1,column=14,value=form.repair_object_brand.data )
-    worksheet.cell(row=number + 1,column=15,value=form.repair_object_category.data )
-    worksheet.cell(row=number + 1,column=17,value=form.repair_object_error.data )
+    worksheet.cell(row=number + 1,column=13,value=form.info_email.data )
+    worksheet.cell(row=number + 1,column=14,value=form.info_other.data )
+    worksheet.cell(row=number + 1,column=15,value=form.repair_object_brand.data )
+    worksheet.cell(row=number + 1,column=16,value=form.repair_object_type.data )
+    worksheet.cell(row=number + 1,column=17,value=form.repair_object_category.data )
+    worksheet.cell(row=number + 1,column=19,value=form.repair_object_error.data )
     try:
         workbook.save(excel_file)
     except Exception:
@@ -520,10 +524,11 @@ def register_form():
                     flash('ACHTUNG! Reparaturblatt konnte nicht gedruckt werden!')
             WriteExcelEntry( rep_nr , form )
         return redirect(url_for('register_form'))
+    # render the submitted form (with its validation errors), not a fresh one
     return render_template(
         'form.html',
         form=form,
-        repaircafe_form=RepairCafeForm()
+        repaircafe_form=form
     )
 
 @app.route('/config', methods=['GET', 'POST'])
